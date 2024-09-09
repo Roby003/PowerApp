@@ -1,0 +1,126 @@
+﻿{
+   "CodeGenerationMode": 4,
+   "ContextClassName": "PowerAppContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "Context",
+   "OutputPath": "Entities",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "DA",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[CATEGORY]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[COMMENT]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EXERCISE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EXERCISE_CATEGORY]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FollowedUser]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FOOD]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[IMAGE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LIKE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LOGS]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MEAL]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MEAL_FOOD]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NOTIFICATION]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Role_Application]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ROLES]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SET]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TEMPLATE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TEMPLATE_EXERCISE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[USER]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WORKOUT]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[VwExercises]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[VwWorkoutsThisWeek]",
+         "ObjectType": 3
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": true,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
+}
