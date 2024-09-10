@@ -13,7 +13,9 @@ export default {
   PostFollowUser: (userId) => `/user/followUser?followedUserId=${userId}`,
   GetUsersWithApplications: (take, skip) => `/user/getWithApplication?take=${take}&skip=${skip}`,
   GetUserImage: (userId) => `/user/getImage?userId=${userId}`,
+  GetFollowedAll: (userId) => `/user/getFollowedAll?userId=${userId}`,
 
+  GetFollowingAll: (userId) => `/user/getFollowingAll?userId=${userId}`,
   PostWorkout: "/workout",
 
   GetPersonalWorkouts: (take, skip, userId) => `/workout/getPersonal?take=${take}&skip=${skip}&userId=${userId}`,

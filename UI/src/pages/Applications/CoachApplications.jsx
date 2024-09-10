@@ -1,10 +1,10 @@
 import { Box, Card, CardContent } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import Pagination from "../../components/utility/Pagination";
+import InfiniteScroll from "react-infinite-scroll-component";
 import useAuthService from "../../services/UserService";
 import Resources from "../../statics/Resources";
 import UserApplication from "./UserApplication";
-const PAGINATION_CONSTANT = 7;
+const PAGINATION_CONSTANT = 15;
 
 function CoachApplications() {
   const [applications, setApplications] = useState([]);
@@ -17,15 +17,15 @@ function CoachApplications() {
 
   useEffect(() => {
     async function loadFromDb() {
-      setApplications(await getUsersWithApplications(PAGINATION_CONSTANT, paginationState - PAGINATION_CONSTANT));
+      setApplications(await getUsersWithApplications(paginationState, 0));
     }
     loadFromDb();
-  }, [paginationState, triggerReload]);
+  }, [triggerReload]);
 
-  function changePagination(change) {
-    setPaginationState(paginationState + change < PAGINATION_CONSTANT ? PAGINATION_CONSTANT : paginationState + change);
+  async function fetchData() {
+    setApplications(await getUsersWithApplications(paginationState + PAGINATION_CONSTANT, 0));
+    setPaginationState(paginationState + PAGINATION_CONSTANT);
   }
-
   return (
     <div className="centered">
       <Box className="centerCard col-8">
@@ -39,16 +39,18 @@ function CoachApplications() {
             <div className="col-2 bold">Followers</div>
             <div className="col-4"></div>
           </div>
-          {applications.map((app) => (
-            <UserApplication key={app.applicationId} application={app} reloadList={reloadList} />
-          ))}
+          <InfiniteScroll
+            dataLength={applications.length}
+            next={fetchData}
+            loader={<h4>Loading...</h4>}
+            hasMore={true}
+            height="100%"
+          >
+            {applications.map((app) => (
+              <UserApplication key={app.applicationId} application={app} reloadList={reloadList} />
+            ))}
+          </InfiniteScroll>
         </Card>
-        <Pagination
-          paginationState={paginationState}
-          PAGINATION_CONSTANT={PAGINATION_CONSTANT}
-          changePagination={changePagination}
-          objectList={applications}
-        />
       </Box>
     </div>
   );

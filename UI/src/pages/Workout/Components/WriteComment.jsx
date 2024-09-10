@@ -6,7 +6,6 @@ import Resources from "../../../statics/Resources";
 import VALIDATIONS from "../../../validations";
 import { useValidation } from "../../../validations/useValidation";
 import Validator from "../../../validations/Validator";
-
 function WriteComment({ workoutId, reloadComments }) {
   const { addComment } = useCommentService();
   const {

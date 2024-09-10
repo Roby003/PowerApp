@@ -77,6 +77,14 @@ const useAuthService = () => {
   const getCoaches = async () => {
     return await api.get(ApiPaths.GetCoaches);
   };
+
+  const getFollowedAll = async (userId) => {
+    return await api.get(ApiPaths.GetFollowedAll(userId));
+  };
+
+  const getFollowingAll = async (userId) => {
+    return await api.get(ApiPaths.GetFollowingAll(userId));
+  };
   return {
     login,
     register,
@@ -92,6 +100,8 @@ const useAuthService = () => {
     getUsersWithApplications,
     getUserImage,
     getCoaches,
+    getFollowingAll,
+    getFollowedAll,
   };
 };
 

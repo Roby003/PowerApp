@@ -1,28 +1,32 @@
 import SearchIcon from "@mui/icons-material/Search";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { Card, CardActionArea, InputAdornment, OutlinedInput, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import Paths from "../../statics/Paths";
-function UserSearch({ getUsersByUsername, userId }) {
+import Paths from "../../../statics/Paths";
+
+function UserSearchforProfile({ getUsers, getUsersByUsername, userId }) {
   const inputRef = React.useRef(null);
   const [users, setUsers] = React.useState([]);
 
   function update() {
     let timeout;
-
     if (timeout) clearTimeout(timeout);
 
     timeout = setTimeout(async () => {
       setUsers(
-        inputRef.current.value === ""
-          ? []
-          : userId === null
-          ? await getUsersByUsername(inputRef.current.value)
-          : await getUsersByUsername(inputRef.current.value, userId)
+        inputRef.current.value.trim() == ""
+          ? await getUsers(userId)
+          : await getUsersByUsername(inputRef.current.value.trim(), userId)
       );
     }, 500);
   }
+  useEffect(() => {
+    async function load() {
+      setUsers(await getUsers(userId));
+    }
+    load();
+  }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }} className="searchUsersFeed">
@@ -64,4 +68,4 @@ function UserSearch({ getUsersByUsername, userId }) {
   );
 }
 
-export default UserSearch;
+export default UserSearchforProfile;

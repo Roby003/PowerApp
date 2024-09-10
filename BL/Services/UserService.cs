@@ -253,7 +253,14 @@ namespace BL.Services
                 .Where(u => u.UserName.Contains(username))).ToListAsync();
         }
 
-
+        public async Task<List<UserListItemDTO>> GetFollowedAll(Guid guid)
+        {
+            return await Mapper.Map<User,UserListItemDTO>(UnitOfWork.Queryable<User>().Include(u=>u.Users).Where(u=>u.Id==guid).SelectMany(u=>u.Users)).ToListAsync();
+        }
+        public async Task<List<UserListItemDTO>> GetFollowingAll(Guid guid)
+        {
+            return await Mapper.Map<User, UserListItemDTO>(UnitOfWork.Queryable<User>().Include(u => u.FollowedUsers).Where(u => u.Id == guid).SelectMany(u => u.FollowedUsers)).ToListAsync();
+        }
         public async Task<int> FollowUser(Guid userId)
         {
             var currentUserId = CurrentUser.Id();

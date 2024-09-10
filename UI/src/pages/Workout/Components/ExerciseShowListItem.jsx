@@ -9,6 +9,7 @@ import * as React from "react";
 import SetShowItem from "./SetShowItem";
 import useExerciseService from "../../../services/ExerciseService";
 import Divider from "@mui/material/Divider";
+import defaultExercieImg from "../../../assets/images/default_exercise.jpg";
 
 // exercises: [
 //     {
@@ -66,7 +67,11 @@ function ExerciseShowListItem({ exercise }) {
     <>
       <Card variant="" className="exerciseShowListItemCard">
         <CardContent className="exerciseItem">
-          <img src={`data:image/jpg;base64,${image}`} className="exerciseImage" />
+          {image ? (
+            <img src={`data:image/jpg;base64,${image}`} className="exerciseImage" />
+          ) : (
+            <img src={defaultExercieImg} className="exerciseImage" />
+          )}
           <Typography>{exercise.name}</Typography>
           <IconButton onClick={handleExpandClick}>
             <ExpandMoreIcon>Expand</ExpandMoreIcon>

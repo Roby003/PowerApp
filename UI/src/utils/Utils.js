@@ -38,5 +38,9 @@ export default function useUtils() {
     });
   }
 
-  return { BuildQueryJson, parseDate, stringFormat };
+  function getPath() {
+    return window.location.href.split(":")[2].slice(4);
+  }
+
+  return { BuildQueryJson, parseDate, stringFormat, getPath };
 }

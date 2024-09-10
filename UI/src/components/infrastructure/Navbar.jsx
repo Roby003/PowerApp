@@ -19,6 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAccount } from "../../contexts/AccountContext";
 import Paths from "../../statics/Paths";
 import userSession from "../../utils/userSession";
+import useUtils from "../../utils/Utils";
 function Navbar() {
   const style = {
     position: "absolute",
@@ -39,7 +40,7 @@ function Navbar() {
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const [settings, setSettings] = React.useState([]);
   const navigate = useNavigate();
-
+  const { getPath } = useUtils();
   const [value, setValue] = React.useState(1);
 
   const handleChange = (event, newValue) => {
@@ -101,15 +102,12 @@ function Navbar() {
   }, [authState]);
 
   React.useEffect(() => {
+    const path = getPath();
     if (userSession.isAuthenticated())
-      if (
-        window.location.href.split("9000")[1] == `/profile/${userSession.user().id}` ||
-        window.location.href.split("9000")[1] == `/myProfile`
-      )
-        setValue(2);
-    if (window.location.href.split("9000")[1] == `/feed`) setValue(1);
-    if (window.location.href.split("9000")[1] == `/workout/create`) setValue(0);
-    if (window.location.href.split("9000")[1].split("/")[1] == `admin`) setValue(3);
+      if (path == `/profile/${userSession.user().id}` || path == `/myProfile`) setValue(2);
+    if (path == `/feed`) setValue(1);
+    if (path == `/workout/create`) setValue(0);
+    if (path == `admin`) setValue(3);
   }, [window.location.href]);
 
   return (

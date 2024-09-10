@@ -1,3 +1,4 @@
+import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -9,14 +10,14 @@ import * as React from "react";
 import useCategoryService from "../../services/CategoryService.js";
 import useExerciseService from "../../services/ExerciseService.js";
 
-import { Button, Divider } from "@mui/material";
+import { Button, Divider, InputAdornment, OutlinedInput } from "@mui/material";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useNavigate } from "react-router-dom";
-import Pagination from "../../components/utility/Pagination.jsx";
 import Paths from "../../statics/Paths.js";
 import ExerciseShowItem from "./ExerciseShowItem.jsx";
 export default function ExercisePage() {
   const navigate = useNavigate();
-  const PAGINATION_CONSTANT = 6;
+  const PAGINATION_CONSTANT = 15;
   const [muscleSelect, setMuscleSelect] = React.useState("default");
   const { getExercisesByCategory, getExercisesAll } = useExerciseService();
   const { getCategories } = useCategoryService();
@@ -24,19 +25,28 @@ export default function ExercisePage() {
   const [exerciseList, setExerciseList] = React.useState([]);
   const [paginationState, setPaginationState] = React.useState(PAGINATION_CONSTANT);
   const [triggerReload, setTriggerReload] = React.useState(false);
+  const [triggerSearch, setTriggerSearch] = React.useState(false);
+
   const handleChange = async (event) => {
     setPaginationState(PAGINATION_CONSTANT);
     setMuscleSelect(event.target.value);
     event.target.value === "default"
-      ? setExerciseList(await getExercisesAll(PAGINATION_CONSTANT, 0))
+      ? setExerciseList(await getExercisesAll(PAGINATION_CONSTANT, 0, inputRef.current.value))
       : setExerciseList(
           await getExercisesByCategory(
             [PAGINATION_CONSTANT, 0],
             ["exerciseId", 1],
-            [
-              ["categoryId", event.target.value],
-              ["isActive", 1],
-            ]
+
+            inputRef.current.value == ""
+              ? [
+                  ["categoryId", event.target.value],
+                  ["isActive", 1],
+                ]
+              : [
+                  ["categoryId", event.target.value],
+                  ["isActive", 1],
+                  ["name", inputRef.current.value],
+                ]
           )
         );
   };
@@ -50,37 +60,88 @@ export default function ExercisePage() {
   }, []);
 
   React.useEffect(() => {
+    console.log("useEffect");
     async function loadFromDb() {
       muscleSelect === "default"
-        ? setExerciseList(
-            await getExercisesAll(
-              PAGINATION_CONSTANT,
-              paginationState - PAGINATION_CONSTANT < 0 ? 0 : paginationState - PAGINATION_CONSTANT,
-              ""
-            )
-          )
+        ? setExerciseList(await getExercisesAll(paginationState, 0, inputRef.current.value))
         : setExerciseList(
             await getExercisesByCategory(
-              [
-                PAGINATION_CONSTANT,
-                paginationState - PAGINATION_CONSTANT < 0 ? 0 : paginationState - PAGINATION_CONSTANT,
-              ],
+              [paginationState, 0],
               ["exerciseId", 1],
               muscleSelect === ""
                 ? []
+                : inputRef.current.value == ""
+                ? [
+                    ["categoryId", muscleSelect],
+                    ["isActive", 1],
+                  ]
                 : [
                     ["categoryId", muscleSelect],
                     ["isActive", 1],
+                    ["name", inputRef.current.value],
                   ]
             )
           );
     }
     loadFromDb();
-  }, [paginationState, triggerReload]);
+  }, [triggerSearch]);
 
-  function changePagination(change) {
-    console.log(change);
-    setPaginationState(paginationState + change < PAGINATION_CONSTANT ? PAGINATION_CONSTANT : paginationState + change);
+  const inputRef = React.useRef(null);
+
+  function update() {
+    console.log("update");
+    let timeout;
+    if (timeout) clearTimeout(timeout);
+
+    timeout = setTimeout(async () => {
+      muscleSelect === "default"
+        ? setExerciseList(await getExercisesAll(paginationState, 0, inputRef.current.value))
+        : setExerciseList(
+            await getExercisesByCategory(
+              [paginationState, 0],
+              ["exerciseId", 1],
+              muscleSelect === ""
+                ? []
+                : inputRef.current.value == ""
+                ? [
+                    ["categoryId", muscleSelect],
+                    ["isActive", 1],
+                  ]
+                : [
+                    ["categoryId", muscleSelect],
+                    ["isActive", 1],
+                    ["name", inputRef.current.value],
+                  ]
+            )
+          );
+    }, 500);
+
+    return handleChange;
+  }
+  async function fetchData() {
+    console.log("fetchData");
+    muscleSelect === "default"
+      ? setExerciseList(await getExercisesAll(paginationState + PAGINATION_CONSTANT, 0, inputRef.current.value))
+      : setExerciseList(
+          await getExercisesByCategory(
+            [paginationState + PAGINATION_CONSTANT, 0],
+            ["exerciseId", 1],
+            muscleSelect === ""
+              ? []
+              : inputRef.current.value == ""
+              ? [
+                  ["categoryId", muscleSelect],
+                  ["isActive", 1],
+                ]
+              : [
+                  ["categoryId", muscleSelect],
+                  ["isActive", 1],
+                  ["name", inputRef.current.value],
+                ]
+          )
+        );
+
+    setPaginationState(paginationState + PAGINATION_CONSTANT);
   }
   return (
     <Box className="centerCard">
@@ -115,25 +176,41 @@ export default function ExercisePage() {
             </Select>
           </FormControl>
         </CardContent>
+        <CardContent>
+          <div className="inputLabel">Filter By Name</div>
+          <OutlinedInput
+            variant="outlined"
+            inputRef={inputRef}
+            onChange={() => update()}
+            startAdornment={
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: "#1976d2" }} />
+              </InputAdornment>
+            }
+            fullWidth
+          />
+        </CardContent>
         <Divider variant="middle" />
         <CardContent className="exerciseList">
-          {exerciseList.map((ex) => {
-            return (
-              <ExerciseShowItem
-                key={ex.exerciseId}
-                exercise={ex}
-                triggerReload={triggerReload}
-                setTriggerReload={setTriggerReload}
-              />
-            );
-          })}
+          <InfiniteScroll
+            dataLength={exerciseList.length}
+            next={fetchData}
+            loader={<h4>Loading...</h4>}
+            hasMore={true}
+            height="500px"
+          >
+            {exerciseList.map((ex) => {
+              return (
+                <ExerciseShowItem
+                  key={ex.exerciseId}
+                  exercise={ex}
+                  triggerReload={triggerReload}
+                  setTriggerReload={setTriggerReload}
+                />
+              );
+            })}
+          </InfiniteScroll>
         </CardContent>
-        <Pagination
-          paginationState={paginationState}
-          PAGINATION_CONSTANT={PAGINATION_CONSTANT}
-          changePagination={changePagination}
-          objectList={exerciseList}
-        />
       </Card>
     </Box>
   );

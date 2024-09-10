@@ -3,6 +3,7 @@ import { CardActionArea, IconButton, Menu, MenuItem, Typography } from "@mui/mat
 import MoreVertIcon from "@mui/icons-material/MoreVertOutlined";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import defaultProfileImg from "../../../assets/images/default_profile.jfif";
 import ConfirmRemoveModal from "../../../components/utility/ConfirmRemoveModal";
 import useCommentService from "../../../services/CommentService";
 import Paths from "../../../statics/Paths";
@@ -10,6 +11,7 @@ import Resources from "../../../statics/Resources";
 import useUtils from "../../../utils/Utils";
 import userSession from "../../../utils/userSession";
 import EditCommentModal from "./EditCommentModal";
+
 const TAKE_COMMENTS_CONSTANT = 3;
 function CommentList({ workoutId, reloadComments, ownPageFlag }) {
   const [comments, setComments] = useState([]);
@@ -56,8 +58,11 @@ function CommentList({ workoutId, reloadComments, ownPageFlag }) {
         {comments.map((comm, index) => (
           <div key={index} className=" marginBottom">
             <div className="row smallMarginBottom noWrap">
-              <img src={`data:image/jpg;base64,${comm.user.image}`} className="exerciseImage" />
-
+              {comm.user.image ? (
+                <img src={`data:image/jpg;base64,${comm.user.image}`} className="exerciseImage" />
+              ) : (
+                <img src={defaultProfileImg} className="exerciseImage" />
+              )}
               <div className="col col-11">
                 <div className="row">
                   <div className="col col-6">
