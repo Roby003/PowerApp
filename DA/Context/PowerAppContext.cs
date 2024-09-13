@@ -34,6 +34,8 @@ public partial class PowerAppContext : DbContext
 
     public virtual DbSet<Notification> Notifications { get; set; }
 
+    public virtual DbSet<NotificationType> NotificationTypes { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<RoleApplication> RoleApplications { get; set; }
@@ -211,23 +213,39 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__NOTIFICA__20CF2E12FFF17A17");
+            entity.HasKey(e => e.NotificationId).HasName("PK__NOTIFICA__20CF2E1284D87710");
 
             entity.ToTable("NOTIFICATION");
+
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.IsRead).HasColumnName("isRead");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.NotificationCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_NOTIFICATION_USER_INITIATOR");
 
-            entity.HasOne(d => d.User).WithMany(p => p.NotificationUsers)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+            entity.HasOne(d => d.NotificationType).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.NotificationTypeId)
+                .HasConstraintName("FK_NOTIFICATION_NOTIFICATIONTYPE");
+
+            entity.HasOne(d => d.Target).WithMany(p => p.NotificationTargets)
+                .HasForeignKey(d => d.TargetId)
                 .HasConstraintName("FK_NOTIFICATION_USER");
 
             entity.HasOne(d => d.Workout).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.WorkoutId)
                 .HasConstraintName("FK_NOTIFIACTION_WORKOUT");
+        });
+
+        modelBuilder.Entity<NotificationType>(entity =>
+        {
+            entity.HasKey(e => e.NotificationTypeId).HasName("PK__NOTIFICA__299002C12AB6E191");
+
+            entity.ToTable("NOTIFICATION_TYPE");
+
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.Template).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -333,6 +351,7 @@ public partial class PowerAppContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(4000);
             entity.Property(e => e.Email).HasMaxLength(250);
             entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.Password).HasMaxLength(250);

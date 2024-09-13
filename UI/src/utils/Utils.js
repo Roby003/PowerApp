@@ -42,5 +42,35 @@ export default function useUtils() {
     return window.location.href.split(":")[2].slice(4);
   }
 
-  return { BuildQueryJson, parseDate, stringFormat, getPath };
+  function parseTimeSpan(timeSpanStr) {
+    const timeSpanParts = timeSpanStr.split(":");
+
+    let days = 0;
+    let hours = 0;
+    let minutes = 0;
+    let seconds = 0;
+
+    if (timeSpanParts.length === 3) {
+      const [dayHour, min, sec] = timeSpanParts;
+      if (dayHour.includes(".")) {
+        const dayHourParts = dayHour.split(".");
+        days = parseInt(dayHourParts[0], 10);
+        hours = parseInt(dayHourParts[1], 10);
+      } else {
+        hours = parseInt(dayHour, 10);
+      }
+      minutes = parseInt(min, 10);
+      seconds = parseInt(sec, 10);
+    } else if (timeSpanParts.length === 2) {
+      [hours, minutes] = timeSpanParts.map((part) => parseInt(part, 10));
+    }
+
+    return {
+      days,
+      hours,
+      minutes,
+      seconds,
+    };
+  }
+  return { BuildQueryJson, parseDate, stringFormat, getPath, parseTimeSpan };
 }

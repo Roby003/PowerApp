@@ -12,6 +12,4 @@ public partial class VwWorkoutsThisWeek
     public int? LikeCount { get; set; }
 
     public int? CommentCount { get; set; }
-
-
 }

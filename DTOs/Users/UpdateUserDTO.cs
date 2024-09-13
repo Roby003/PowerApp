@@ -13,6 +13,7 @@ namespace DTOs.Users
         public string Password { get; set; } = null!;
         public IFormFile? Image { get; set; }
 
+        public string? Description { get; set; }
 
 
     }

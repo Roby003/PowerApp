@@ -63,6 +63,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[NOTIFICATION_TYPE]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Role_Application]",
          "ObjectType": 0
       },

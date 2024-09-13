@@ -1,5 +1,6 @@
 ﻿using BL.UnitOfWork;
 using Common.AppSettings;
+using Common.Enums;
 using DA.Entities;
 using DTOs.Likes;
 using Microsoft.EntityFrameworkCore;
@@ -39,17 +40,66 @@ namespace BL.Services
                     UserId = currentUserId
                 };
                 UnitOfWork.Repository<Like>().Add(newLike);
+                await CreateNotification(newLike);
             }
             else
             {
                 UnitOfWork.Repository<Like>().Remove(dbLike);
+                await RemoveNotification(dbLike);
             }
 
             return await Save();
 
         }
 
-        public async Task<GetLikesInfoDTO?> IsWorkoutLiked(int workoutId)
+        public async Task CreateNotification(Like like)
+        {
+
+            var notification = new Notification();
+            notification.IsRead = false;
+            notification.CreatedDate = DateTime.Now;
+            notification.CreatedBy = CurrentUser.Id();
+            notification.WorkoutId = like.WorkoutId;
+            notification.NotificationTypeId = (int)NotificationTypes.NewLike;
+
+            notification.TargetId = like.UserId;
+
+            if (UnitOfWork.Queryable<Notification>().Where(n => n.WorkoutId == like.WorkoutId &&
+                                                           n.NotificationTypeId == (int)NotificationTypes.NewLike &&
+                                                           n.CreatedBy == notification.CreatedBy && n.IsRead == false)
+                                                    .Any())
+                return;
+
+            var userName = await UnitOfWork.Queryable<User>().Where(u => u.Id == notification.TargetId)
+                                                                           .Select(u => u.UserName).FirstOrDefaultAsync();
+
+            var template = UnitOfWork.Queryable<NotificationType>().Where(w => w.NotificationTypeId == notification.NotificationTypeId)
+                                                                    .Select(w => w.Template).FirstOrDefault();
+
+            var workoutNote = await UnitOfWork.Queryable<Workout>().Where(w => w.WorkoutId == notification.WorkoutId).Select(w => w.Note).FirstOrDefaultAsync();
+            notification.Description = String.Format(template!, userName,workoutNote);
+            UnitOfWork.Repository<Notification>().Add(notification);
+
+        }
+
+        public async Task RemoveNotification(Like like)
+        {
+            var currentUserId = CurrentUser.Id();
+
+            var dbNotification = await UnitOfWork.Queryable<Notification>().Where(n => n.WorkoutId == like.WorkoutId &&
+                                                           n.NotificationTypeId == (int)NotificationTypes.NewLike &&
+                                                           n.CreatedBy == currentUserId && n.IsRead == false).FirstOrDefaultAsync();
+            if (dbNotification == null)
+                return;
+
+            UnitOfWork.Repository<Notification>().Remove(dbNotification);
+        }
+                
+            
+
+
+
+            public async Task<GetLikesInfoDTO?> IsWorkoutLiked(int workoutId)
         {
             var currentUserId = CurrentUser.Id();
             if (!await UnitOfWork.Queryable<Workout>().Where(w => w.WorkoutId == workoutId).AnyAsync())

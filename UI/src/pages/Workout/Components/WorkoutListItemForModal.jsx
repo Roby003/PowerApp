@@ -27,7 +27,7 @@ import useUtils from "../../../utils/Utils";
 import VALIDATIONS from "../../../validations";
 import { useValidation } from "../../../validations/useValidation";
 import Validator from "../../../validations/Validator";
-import CommentList from "./CommentList";
+import CommentListWithScroll from "./CommentListWithScroll";
 import ExerciseShowListItem from "./ExerciseShowListItem";
 import LikeButton from "./LikeButton";
 import WriteComment from "./WriteComment";
@@ -63,7 +63,7 @@ import WriteComment from "./WriteComment";
 //        roleId:
 //      }
 // }
-function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
+function WorkoutListItemForModal({ workout, ownPageFlag, triggerReload }) {
   const [triggerCommentReload, setTriggerCommentReload] = useState(false);
   const reloadComments = () => setTriggerCommentReload(!triggerCommentReload);
   const { parseDate } = useUtils();
@@ -92,7 +92,6 @@ function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
   ///
@@ -127,7 +126,7 @@ function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
   };
 
   return (
-    <Card variant="elevation" className="workoutListItem" sx={{ borderRadius: "18px" }}>
+    <Card variant="elevation" className="workoutListItem" sx={{ width: "100%" }}>
       <CardContent className="workoutListHeaders ">
         <div className="row">
           <div className="col col-6">
@@ -227,12 +226,12 @@ function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
       <Divider />
       <div className="workoutPostSubtitle">Comments</div>
 
-      <CommentList workoutId={workout.workoutId} reloadComments={reloadComments} ownPageFlag={ownPageFlag} />
-      <CardContent>
+      <CommentListWithScroll workoutId={workout.workoutId} reloadComments={reloadComments} ownPageFlag={ownPageFlag} />
+      <CardContent sx={{ paddingTop: 0 }}>
         <WriteComment workoutId={workout.workoutId} reloadComments={reloadComments} />
       </CardContent>
     </Card>
   );
 }
 
-export default WorkoutListItem;
+export default WorkoutListItemForModal;

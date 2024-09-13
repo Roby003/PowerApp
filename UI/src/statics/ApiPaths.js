@@ -30,6 +30,7 @@ export default {
   RemoveWorkout: (workoutId) => `/workout/remove?workoutId=${workoutId}`,
   GetPreviousWorkoutByTemplateId: (templateId) => `/workout/getPreviousByTemplateId?templateId=${templateId}`,
   GetFeaturedWorkout: "/workout/getFeatured",
+  GetWorkoutById: (workoutId) => `/workout/getById?workoutId=${workoutId}`,
 
   PostExercise: "/exercise",
   GetExercisesByCategory: "/exercise/getByCategory",
@@ -69,4 +70,6 @@ export default {
   ApproveApplication: (applicationId) => `/role/application/approve?applicationId=${applicationId}`,
   RemoveApplication: (applicationId) => `/role/application/remove?applicationId=${applicationId}`,
   CheckForApplication: (userId) => `/role/application/checkUser?userId=${userId}`,
+
+  GetNotifications: (take) => `/notification?take=${take}`,
 };

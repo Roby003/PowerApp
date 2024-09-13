@@ -9,17 +9,25 @@ public partial class Notification
 {
     public int NotificationId { get; set; }
 
-    public Guid UserId { get; set; }
-
     public Guid CreatedBy { get; set; }
+
+    public Guid? TargetId { get; set; }
 
     public int? WorkoutId { get; set; }
 
-    public string? Description { get; set; }
+    public string Description { get; set; } = null!;
+
+    public int? NotificationTypeId { get; set; }
+
+    public DateTime CreatedDate { get; set; }
+
+    public bool IsRead { get; set; }
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+    public virtual NotificationType? NotificationType { get; set; }
+
+    public virtual User? Target { get; set; }
 
     public virtual Workout? Workout { get; set; }
 }

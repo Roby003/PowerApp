@@ -37,6 +37,8 @@ const Register = ({ setIsLogin }) => {
     .check(VALIDATIONS.isRequired, ValidationMessages.general.isRequired)
     .forProperty("image")
     .check(VALIDATIONS.alwaysTrue, "")
+    .forProperty("description")
+    .check(VALIDATIONS.alwaysTrue, "")
     .applyCheckOnlyOnSubmit();
 
   const {
@@ -128,6 +130,19 @@ const Register = ({ setIsLogin }) => {
             />
           </Button>
           {formData.image && <p>{formData.image.name}</p>}
+        </CardContent>
+        <CardContent>
+          <div className="inputLabel">Add a description to your profile</div>
+          <TextField
+            error={formErrors["description"]}
+            variant="outlined"
+            name="description"
+            value={formData.description}
+            onChange={onChangeInput}
+            fullWidth
+            multiline
+          />
+          {formErrors["description"] && <Alert severity="error">{formErrors["description"]}</Alert>}
         </CardContent>
         <CardContent className="flexRight">
           <Button variant="contained" onClick={handleSubmit}>

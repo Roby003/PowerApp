@@ -54,7 +54,7 @@ namespace BL.Services
 
         public async Task<List<ShowWorkoutDTO>> GetPersonalWorkoutsByActivity(int take, int skip, Guid userId)
         {
-          
+
 
             return await UnitOfWork.Queryable<Workout>()
                    .Where(w => w.UserId == userId)
@@ -89,7 +89,7 @@ namespace BL.Services
         }
         public async Task<List<ShowWorkoutDTO>> GetPersonalWorkouts(int take, int skip, Guid userId)
         {
-       
+
 
             return await UnitOfWork.Queryable<Workout>()
                     .Where(w => w.UserId == userId)
@@ -123,6 +123,38 @@ namespace BL.Services
 
         }
 
+        public async Task<ShowWorkoutDTO?> GetWorkoutById(int workoutId)
+        {
+            return await UnitOfWork.Queryable<Workout>()
+                    .Where(w => w.WorkoutId == workoutId)
+                  .Include(w => w.Sets).Include(w => w.User)
+                    .Select(w => new ShowWorkoutDTO
+                    {
+                        WorkoutId = w.WorkoutId,
+                        Note = w.Note,
+                        CreatedDate = w.CreatedDate,
+                        Exercises = w.Sets.GroupBy(s => s.Exercise).Select(s => new ShowExerciseDTO
+                        {
+                            ExerciseId = s.Key.ExerciseId,
+                            Name = s.Key.Name,
+                            Sets = s.Select(set => new SetListItemDTO
+                            {
+                                Reps = set.Reps,
+                                Weight = set.Weight,
+                                Rpe = set.Rpe
+                            }).ToList(),
+                        }).ToList(),
+                        User = new DTOs.Users.UserDetailsDTO
+                        {
+                            Id = w.UserId,
+                            UserName = w.User.UserName,
+                            Email = w.User.Email,
+                            RoleId = w.User.RoleId,
+                            Image = w.User.Image.ContentFile,
+                        }
+                    }).FirstOrDefaultAsync();
+        }
+
         public bool HasEmptyOrNegativeSets(List<AddSetDTO> setsDto)
         {
             var isValid = true;
@@ -140,7 +172,7 @@ namespace BL.Services
             var currentUserId = CurrentUser.Id();
             var currentUser = await UnitOfWork.Queryable<User>().Include(u => u.FollowedUsers).FirstAsync(u => u.Id == currentUserId);
 
-           
+
 
             return await UnitOfWork.Queryable<Workout>().Where(w => currentUser.FollowedUsers.Contains(w.User)).Include(w => w.Sets).Include(w => w.User).Include(w => w.Likes).Include(w => w.Comments)
                    .OrderByDescending(w => 0.3 * (w.Likes.Count()) + 0.7 * (w.Comments.Count())).Skip(skip).Take(take).Select(w => new ShowWorkoutDTO
@@ -288,7 +320,7 @@ namespace BL.Services
                 }).ToList(),
             }).ToListAsync();
 
-            var user = await UnitOfWork.Queryable<User>().Include(u=>u.Image).Where(u => u.Id == workout.UserId).FirstAsync();
+            var user = await UnitOfWork.Queryable<User>().Include(u => u.Image).Where(u => u.Id == workout.UserId).FirstAsync();
             return new ShowWorkoutDTO
             {
                 WorkoutId = workout.WorkoutId,

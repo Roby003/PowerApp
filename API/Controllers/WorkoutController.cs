@@ -58,6 +58,12 @@ namespace API.Controllers
 
         }
 
+        [HttpGet]
+        [Route("workout/getById")]
+        public async Task<ShowWorkoutDTO?> GetWorkoutById([FromQuery] int workoutId)
+        {
+            return await workoutService.GetWorkoutById(workoutId);
+        }
         [HttpDelete]
         [Route("workout/remove")]
         public async Task<int?> RemoveWorkout([FromQuery] int workoutId)

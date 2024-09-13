@@ -50,7 +50,7 @@ export default function ProfileInfo({ userId }) {
 
   return (
     <Box className="centerCard profileInfo">
-      <Card variant="elevation">
+      <Card variant="elevation" sx={{ borderRadius: 4 }}>
         {Object.keys(userInfo).length > 0 && (
           <>
             <CardContent>
@@ -68,6 +68,7 @@ export default function ProfileInfo({ userId }) {
                       {ownPageFlag && <Typography className="subTitle">{userInfo.email}</Typography>}
                     </div>
                   </div>
+                  <div className="row smallMarginLeft mediumMarginTop">{userInfo.description}</div>
                 </div>
                 <div className=" col col-9 flexRight flexStart">
                   <div className="profileInfoSmallContainer">

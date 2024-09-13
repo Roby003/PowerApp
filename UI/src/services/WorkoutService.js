@@ -35,6 +35,10 @@ const useWorkoutService = () => {
   const getFeatured = async () => {
     return await api.get(ApiPaths.GetFeaturedWorkout);
   };
+
+  const getWorkoutById = async (workoutId) => {
+    return await api.get(ApiPaths.GetWorkoutById(workoutId));
+  };
   return {
     postWorkout,
     getPersonalWorkouts,
@@ -44,6 +48,7 @@ const useWorkoutService = () => {
     getFeatured,
     getFollowedWorkoutsByActivity,
     getPersonalWorkoutsByActivity,
+    getWorkoutById,
   };
 };
 export default useWorkoutService;

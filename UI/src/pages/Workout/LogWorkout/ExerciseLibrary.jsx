@@ -66,7 +66,6 @@ export default function ExerciseLibrary() {
   }, []);
 
   React.useEffect(() => {
-    console.log("useEffect");
     async function loadFromDb() {
       muscleSelect === "default"
         ? setExerciseList(await getExercisesAll(paginationState, 0, inputRef.current.value))
@@ -95,7 +94,6 @@ export default function ExerciseLibrary() {
   const inputRef = React.useRef(null);
 
   function update() {
-    console.log("update");
     let timeout;
     if (timeout) clearTimeout(timeout);
 
@@ -125,7 +123,6 @@ export default function ExerciseLibrary() {
     return handleChange;
   }
   async function fetchData() {
-    console.log("fetchData");
     muscleSelect === "default"
       ? setExerciseList(await getExercisesAll(paginationState + PAGINATION_CONSTANT, 0, inputRef.current.value))
       : setExerciseList(

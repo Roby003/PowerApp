@@ -9,6 +9,7 @@ namespace DTOs.Users
         public string UserName { get; set; } = null!;
 
         public IFormFile? Image { get; set; }
+        public string? Description {  get; set; }
 
     }
 }

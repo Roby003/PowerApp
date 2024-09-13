@@ -39,7 +39,8 @@ namespace BL.Services
                 UserName = user.UserName,
                 Email = user.Email,
                 RoleId = user.RoleId,
-                Image = user.Image.ContentFile
+                Image = user.Image.ContentFile,
+                Description = user.Description
             };
         }
 
@@ -71,7 +72,8 @@ namespace BL.Services
                 IsActive = true,
                 RoleId = (byte)Roles.Visitor,
                 Email = newUser.Email,
-                UserName = newUser.UserName
+                UserName = newUser.UserName,
+                Description = newUser.Description
             };
 
             newDbUser.CreatedBy = newDbUser.Id;
@@ -113,6 +115,7 @@ namespace BL.Services
 
             dbUser.Email = updatedUser.Email;
             dbUser.UserName = updatedUser.UserName;
+            dbUser.Description = updatedUser.Description;
 
             if (updatedUser.Image != null)
             {
@@ -173,12 +176,8 @@ namespace BL.Services
 
 
         public async Task<bool> IsEmailUsed(string email, Guid? currentUserId = null)
-
         {
-
             return await UnitOfWork.Queryable<User>().Where(u => currentUserId == null || u.Id != currentUserId).AnyAsync(u => u.Email == email);
-
-
         }
 
 
@@ -220,6 +219,7 @@ namespace BL.Services
                     NoFollowingUsers = u.FollowedUsers.Count(),
                     NoFollowedUsers = u.Users.Count(),
                     FollowingFlag = followingFlag,
+                    Description = u.Description,
                 }).FirstAsync();
 
         }
@@ -255,7 +255,7 @@ namespace BL.Services
 
         public async Task<List<UserListItemDTO>> GetFollowedAll(Guid guid)
         {
-            return await Mapper.Map<User,UserListItemDTO>(UnitOfWork.Queryable<User>().Include(u=>u.Users).Where(u=>u.Id==guid).SelectMany(u=>u.Users)).ToListAsync();
+            return await Mapper.Map<User, UserListItemDTO>(UnitOfWork.Queryable<User>().Include(u => u.Users).Where(u => u.Id == guid).SelectMany(u => u.Users)).ToListAsync();
         }
         public async Task<List<UserListItemDTO>> GetFollowingAll(Guid guid)
         {
@@ -279,17 +279,55 @@ namespace BL.Services
             if (currentUser.FollowedUsers.Contains(followedUser))
             {
                 currentUser.FollowedUsers.Remove(followedUser);
+                await RemoveNotification(userId);
             }
             else
             {
 
                 UnitOfWork.Repository<User>().Update(followedUser);
                 currentUser.FollowedUsers.Add(followedUser);
+                await CreateNotification(userId);
             }
             return await Save();
 
         }
 
+        public async Task CreateNotification(Guid targetUserId)
+        {
+            var notification = new Notification();
+            notification.IsRead = false;
+            notification.CreatedDate = DateTime.Now;
+            notification.CreatedBy = CurrentUser.Id();
+            notification.NotificationTypeId = (int)NotificationTypes.NewFollow;
+
+            notification.TargetId = targetUserId;
+
+            if (UnitOfWork.Queryable<Notification>().Any(n => n.CreatedBy == notification.CreatedBy &&
+                                                         n.IsRead == false &&
+                                                         n.NotificationTypeId == (int)NotificationTypes.NewFollow &&
+                                                         n.TargetId == notification.TargetId))
+                return;
+
+            var template = await UnitOfWork.Queryable<NotificationType>().Where(n => n.NotificationTypeId == notification.NotificationTypeId).Select(n => n.Template).FirstOrDefaultAsync();
+
+            var userName = await UnitOfWork.Queryable<User>().Where(u => u.Id == notification.CreatedBy).Select(u => u.UserName).FirstOrDefaultAsync();
+
+            notification.Description = String.Format(template!, userName);
+            UnitOfWork.Repository<Notification>().Add(notification);
+        }
+
+        public async Task RemoveNotification(Guid targetUserId)
+        {
+            var currentUserId = CurrentUser.Id();
+            var dbNotification = await UnitOfWork.Queryable<Notification>().Where(n => n.IsRead == false && 
+                                                                                  n.CreatedBy == currentUserId && 
+                                                                                  n.TargetId == targetUserId && 
+                                                                                  n.NotificationTypeId == (int)NotificationTypes.NewFollow)
+                                                                          .FirstOrDefaultAsync();
+            if (dbNotification == null) return;
+            UnitOfWork.Repository<Notification>().Remove(dbNotification);
+
+        }
         public async Task<List<UserApplicationDTO>> GetUsersWithApplications(int take, int skip)
         {
             return await UnitOfWork.Queryable<RoleApplication>()
@@ -325,7 +363,7 @@ namespace BL.Services
                 .Where(u => u.RoleId == (byte)Roles.Coach)
                 .Where(u => u.Id != currentUserId)
                 .Where(u => !u.Users.Contains(currentUser))
-                .OrderByDescending(u=> u.CreatedDate)
+                .OrderByDescending(u => u.CreatedDate)
                 .Take(5)
                 .Select(u => new UserSmallListItemDTO { UserId = u.Id, UserName = u.UserName }).ToListAsync();
         }

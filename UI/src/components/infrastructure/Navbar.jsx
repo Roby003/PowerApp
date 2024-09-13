@@ -3,8 +3,9 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import DensitySmallIcon from "@mui/icons-material/DensitySmall";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import PersonIcon from "@mui/icons-material/Person";
-import { Modal, Tab, Tabs } from "@mui/material";
+import { CardActionArea, Modal, Tab, Tabs } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -20,6 +21,7 @@ import { useAccount } from "../../contexts/AccountContext";
 import Paths from "../../statics/Paths";
 import userSession from "../../utils/userSession";
 import useUtils from "../../utils/Utils";
+import NotificationMenu from "../Notification/NotificationMenu";
 function Navbar() {
   const style = {
     position: "absolute",
@@ -38,7 +40,6 @@ function Navbar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { isAuth, setIsAuth } = useAccount();
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
-  const [settings, setSettings] = React.useState([]);
   const navigate = useNavigate();
   const { getPath } = useUtils();
   const [value, setValue] = React.useState(1);
@@ -97,7 +98,6 @@ function Navbar() {
           { name: "Admin Panel", route: Paths.admin, icon: <AdminPanelSettingsIcon /> },
         ]);
       }
-      authState ? setSettings([{ name: "Profile", route: Paths.myProfile }]) : [];
     }
   }, [authState]);
 
@@ -107,7 +107,7 @@ function Navbar() {
       if (path == `/profile/${userSession.user().id}` || path == `/myProfile`) setValue(2);
     if (path == `/feed`) setValue(1);
     if (path == `/workout/create`) setValue(0);
-    if (path == `admin`) setValue(3);
+    if (path == `/admin`) setValue(3);
   }, [window.location.href]);
 
   return (
@@ -218,7 +218,8 @@ function Navbar() {
           </Box>
 
           {authState ? (
-            <Box sx={{ flexGrow: 0 }}>
+            <Box sx={{ flexGrow: 0, display: "flex", alignContent: "center" }}>
+              <NotificationMenu />
               <Button textAlign="center" onClick={() => handleModalState(true)}>
                 Logout
               </Button>
