@@ -72,4 +72,5 @@ export default {
   CheckForApplication: (userId) => `/role/application/checkUser?userId=${userId}`,
 
   GetNotifications: (take) => `/notification?take=${take}`,
+  CheckNewNotif: "/notification/checkNew",
 };

@@ -18,12 +18,13 @@ namespace BL.Services
     {
         private readonly ClaimsPrincipal CurrentUser;
         private readonly MapperService Mapper;
+        private readonly WebSocketService webSocketService;
 
-
-        public UserService(MapperService mapper, AppUnitOfWork unitOfWork, ILogger logger, IAppSettings appSettings, ClaimsPrincipal currentUser) : base(unitOfWork, logger, appSettings)
+        public UserService(WebSocketService webSocketService,MapperService mapper, AppUnitOfWork unitOfWork, ILogger logger, IAppSettings appSettings, ClaimsPrincipal currentUser) : base(unitOfWork, logger, appSettings)
         {
             CurrentUser = currentUser;
             Mapper = mapper;
+            this.webSocketService = webSocketService;
         }
 
         public async Task<UserDetailsDTO?> GetUserDetailsById(Guid id)
@@ -314,6 +315,8 @@ namespace BL.Services
 
             notification.Description = String.Format(template!, userName);
             UnitOfWork.Repository<Notification>().Add(notification);
+            await webSocketService.SendNotificationToUser(notification.TargetId.ToString()!);
+
         }
 
         public async Task RemoveNotification(Guid targetUserId)

@@ -3,9 +3,8 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import DensitySmallIcon from "@mui/icons-material/DensitySmall";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import PersonIcon from "@mui/icons-material/Person";
-import { CardActionArea, Modal, Tab, Tabs } from "@mui/material";
+import { Modal, Tab, Tabs } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -206,6 +205,7 @@ function Navbar() {
                 >
                   {pages.map((page) => (
                     <Tab
+                      key={page.name}
                       icon={page.icon}
                       label={page.name}
                       onClick={() => navigate(page.route)}
@@ -220,7 +220,7 @@ function Navbar() {
           {authState ? (
             <Box sx={{ flexGrow: 0, display: "flex", alignContent: "center" }}>
               <NotificationMenu />
-              <Button textAlign="center" onClick={() => handleModalState(true)}>
+              <Button textalign="center" onClick={() => handleModalState(true)}>
                 Logout
               </Button>
             </Box>

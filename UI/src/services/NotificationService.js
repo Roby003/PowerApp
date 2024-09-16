@@ -7,7 +7,11 @@ const useNotificationService = () => {
   const getNotifications = async (take) => {
     return await api.get(ApiPaths.GetNotifications(take));
   };
-  return { getNotifications };
+
+  const checkNewNotif = async () => {
+    return await api.get(ApiPaths.CheckNewNotif);
+  };
+  return { getNotifications, checkNewNotif };
 };
 
 export default useNotificationService;

@@ -20,11 +20,13 @@ namespace BL.Services
     {
         private readonly ClaimsPrincipal CurrentUser;
         private readonly MapperService Mapper;
+        private readonly WebSocketService webSocketService;
 
-        public CommentService(MapperService mapper, AppUnitOfWork unitOfWork, ILogger logger, IAppSettings appSettings, ClaimsPrincipal currentUser) : base(unitOfWork, logger, appSettings)
+        public CommentService(WebSocketService webSocketService,MapperService mapper, AppUnitOfWork unitOfWork, ILogger logger, IAppSettings appSettings, ClaimsPrincipal currentUser) : base(unitOfWork, logger, appSettings)
         {
             CurrentUser = currentUser;
             Mapper = mapper;
+            this.webSocketService = webSocketService;
         }
 
         public async Task<int> AddComment(AddCommentDTO newComment)
@@ -41,9 +43,10 @@ namespace BL.Services
             };
 
             UnitOfWork.Repository<Comment>().Add(comment);
-            await CreateNotification(comment);
             
-            return await Save();
+            await CreateNotification(comment);
+            return  await Save();
+           
         }
         public async Task CreateNotification(Comment comment)
         {
@@ -57,7 +60,7 @@ namespace BL.Services
             notification.TargetId = await UnitOfWork.Queryable<Workout>().Where(w => w.WorkoutId == comment.WorkoutId)
                                                                          .Select(w => w.UserId).FirstOrDefaultAsync();
 
-           var userName= await UnitOfWork.Queryable<User>().Where(u=>u.Id==notification.TargetId)
+           var userName= await UnitOfWork.Queryable<User>().Where(u=>u.Id==notification.CreatedBy)
                                                            .Select (u => u.UserName).FirstOrDefaultAsync(); 
             
             var template = UnitOfWork.Queryable<NotificationType>().Where(w => w.NotificationTypeId == notification.NotificationTypeId)
@@ -65,6 +68,8 @@ namespace BL.Services
 
             notification.Description = String.Format(template!, userName, comment.Content);
             UnitOfWork.Repository<Notification>().Add(notification);
+           
+            await webSocketService.SendNotificationToUser(notification.TargetId.ToString()!);
 
         }
         public async Task<List<ShowCommentDTO>> GetCommentsByWorkout(int workoutId, int take)

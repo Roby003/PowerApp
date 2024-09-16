@@ -4,6 +4,7 @@ using Common.Enums;
 using DA.Entities;
 using DTOs.Likes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.PathSegments;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,13 @@ namespace BL.Services
     {
         private readonly ClaimsPrincipal CurrentUser;
         private readonly MapperService Mapper;
+        private readonly WebSocketService webSocketService;
 
-        public LikeService(MapperService mapper, AppUnitOfWork unitOfWork, ILogger logger, IAppSettings appSettings, ClaimsPrincipal currentUser) : base(unitOfWork, logger, appSettings)
+        public LikeService(WebSocketService _webSocketService, MapperService mapper, AppUnitOfWork unitOfWork, ILogger logger, IAppSettings appSettings, ClaimsPrincipal currentUser) : base(unitOfWork, logger, appSettings)
         {
             CurrentUser = currentUser;
             Mapper = mapper;
+            webSocketService = _webSocketService;
         }
 
         public async Task<int?> LikeWorkout(int workoutId)
@@ -58,11 +61,11 @@ namespace BL.Services
             var notification = new Notification();
             notification.IsRead = false;
             notification.CreatedDate = DateTime.Now;
-            notification.CreatedBy = CurrentUser.Id();
+            notification.CreatedBy = like.UserId;
             notification.WorkoutId = like.WorkoutId;
             notification.NotificationTypeId = (int)NotificationTypes.NewLike;
 
-            notification.TargetId = like.UserId;
+            notification.TargetId = await UnitOfWork.Queryable<Workout>().Where(w => w.WorkoutId == like.WorkoutId).Select(w => w.UserId).FirstOrDefaultAsync();
 
             if (UnitOfWork.Queryable<Notification>().Where(n => n.WorkoutId == like.WorkoutId &&
                                                            n.NotificationTypeId == (int)NotificationTypes.NewLike &&
@@ -70,15 +73,17 @@ namespace BL.Services
                                                     .Any())
                 return;
 
-            var userName = await UnitOfWork.Queryable<User>().Where(u => u.Id == notification.TargetId)
+            var userName = await UnitOfWork.Queryable<User>().Where(u => u.Id == notification.CreatedBy)
                                                                            .Select(u => u.UserName).FirstOrDefaultAsync();
 
             var template = UnitOfWork.Queryable<NotificationType>().Where(w => w.NotificationTypeId == notification.NotificationTypeId)
                                                                     .Select(w => w.Template).FirstOrDefault();
 
             var workoutNote = await UnitOfWork.Queryable<Workout>().Where(w => w.WorkoutId == notification.WorkoutId).Select(w => w.Note).FirstOrDefaultAsync();
-            notification.Description = String.Format(template!, userName,workoutNote);
+            notification.Description = String.Format(template!, userName, workoutNote);
             UnitOfWork.Repository<Notification>().Add(notification);
+
+            await webSocketService.SendNotificationToUser(notification.TargetId.ToString()!);
 
         }
 
@@ -94,12 +99,12 @@ namespace BL.Services
 
             UnitOfWork.Repository<Notification>().Remove(dbNotification);
         }
-                
-            
 
 
 
-            public async Task<GetLikesInfoDTO?> IsWorkoutLiked(int workoutId)
+
+
+        public async Task<GetLikesInfoDTO?> IsWorkoutLiked(int workoutId)
         {
             var currentUserId = CurrentUser.Id();
             if (!await UnitOfWork.Queryable<Workout>().Where(w => w.WorkoutId == workoutId).AnyAsync())

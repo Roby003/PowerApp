@@ -1,7 +1,9 @@
-﻿using BL.UnitOfWork;
+﻿using BL.Hubs;
+using BL.UnitOfWork;
 using Common.AppSettings;
 using DA.Entities;
 using DTOs.Notification;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,18 +26,29 @@ namespace BL.Services
         {
             CurrentUser = currentUser;
             Mapper = mapper;
+            
+
         }
 
 
         public async Task<List<ShowNotificationDTO>> GetNotifications(int take)
         {
+
             var currentUserId= CurrentUser.Id();
             var notifications = await UnitOfWork.Queryable<Notification>().Where(n => n.TargetId == currentUserId).OrderByDescending(n=>n.CreatedDate).Take(take).ToListAsync();
-            notifications.ForEach(notification => { notification.IsRead = true; });
+            var notifToSend = Mapper.Map<Notification, ShowNotificationDTO>(notifications);
 
+            notifications.ForEach(notification => { notification.IsRead = true; });
             UnitOfWork.Repository<Notification>().UpdateRange(notifications);
             await Save();
-            return Mapper.Map<Notification,ShowNotificationDTO>(notifications);
+            return notifToSend;
         }
+
+        public async Task<bool> CheckNewNotif()
+        {
+            var currentUserId = CurrentUser.Id();
+            return await UnitOfWork.Queryable<Notification>().Where(u => u.TargetId == currentUserId && u.IsRead == false).AnyAsync();
+        }
+   
     }
 }

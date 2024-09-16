@@ -1,0 +1,14 @@
+// vite.config.js
+import { defineConfig } from "file:///C:/Work/PowerApp%20Github/UI/node_modules/vite/dist/node/index.js";
+import react from "file:///C:/Work/PowerApp%20Github/UI/node_modules/@vitejs/plugin-react-swc/index.mjs";
+import mkcert from "file:///C:/Work/PowerApp%20Github/UI/node_modules/vite-plugin-mkcert/dist/mkcert.mjs";
+var vite_config_default = defineConfig({
+  plugins: [mkcert(), react()],
+  optimizeDeps: {
+    include: ["@mui/material", "@emotion/react", "@emotion/styled", "@mui/material/Tooltip"]
+  }
+});
+export {
+  vite_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZS5jb25maWcuanMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImNvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9kaXJuYW1lID0gXCJDOlxcXFxXb3JrXFxcXFBvd2VyQXBwIEdpdGh1YlxcXFxVSVwiO2NvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9maWxlbmFtZSA9IFwiQzpcXFxcV29ya1xcXFxQb3dlckFwcCBHaXRodWJcXFxcVUlcXFxcdml0ZS5jb25maWcuanNcIjtjb25zdCBfX3ZpdGVfaW5qZWN0ZWRfb3JpZ2luYWxfaW1wb3J0X21ldGFfdXJsID0gXCJmaWxlOi8vL0M6L1dvcmsvUG93ZXJBcHAlMjBHaXRodWIvVUkvdml0ZS5jb25maWcuanNcIjtpbXBvcnQgeyBkZWZpbmVDb25maWcgfSBmcm9tICd2aXRlJ1xyXG5pbXBvcnQgcmVhY3QgZnJvbSAnQHZpdGVqcy9wbHVnaW4tcmVhY3Qtc3djJ1xyXG5pbXBvcnQgbWtjZXJ0IGZyb20gJ3ZpdGUtcGx1Z2luLW1rY2VydCdcclxuXHJcbi8vIGh0dHBzOi8vdml0ZWpzLmRldi9jb25maWcvXHJcbmV4cG9ydCBkZWZhdWx0IGRlZmluZUNvbmZpZyh7XHJcbiAgcGx1Z2luczogW21rY2VydCgpLCByZWFjdCgpXSxcclxuICBvcHRpbWl6ZURlcHM6IHtcclxuICAgIGluY2x1ZGU6IFsnQG11aS9tYXRlcmlhbCcsICdAZW1vdGlvbi9yZWFjdCcsICdAZW1vdGlvbi9zdHlsZWQnLCdAbXVpL21hdGVyaWFsL1Rvb2x0aXAnXSxcclxuICB9XHJcbn0pXHJcbiJdLAogICJtYXBwaW5ncyI6ICI7QUFBMFEsU0FBUyxvQkFBb0I7QUFDdlMsT0FBTyxXQUFXO0FBQ2xCLE9BQU8sWUFBWTtBQUduQixJQUFPLHNCQUFRLGFBQWE7QUFBQSxFQUMxQixTQUFTLENBQUMsT0FBTyxHQUFHLE1BQU0sQ0FBQztBQUFBLEVBQzNCLGNBQWM7QUFBQSxJQUNaLFNBQVMsQ0FBQyxpQkFBaUIsa0JBQWtCLG1CQUFrQix1QkFBdUI7QUFBQSxFQUN4RjtBQUNGLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

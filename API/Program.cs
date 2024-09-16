@@ -1,3 +1,4 @@
+using BL.Hubs;
 using BL.Logger;
 using Common.AppSettings;
 using Common.Interfaces;
@@ -58,11 +59,20 @@ builder.Services.AddTransient(s =>
 
 builder.Services.AddDerivedFrom<IUnitOfWork>(builder.Services.AddScoped);
 builder.Services.AddDerivedFrom<IService>(builder.Services.AddScoped);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .WithOrigins("https://localhost:5173") 
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()); 
+});
 
 builder.Services.AddAutoMapper();
 builder.Services.AddValidator();
 builder.Services.AddScoped<ILogger, Logger>();
-
+builder.Services.AddSignalR();
 var app = builder.Build();
 app.UseLoggerMiddleware();
 
@@ -73,8 +83,10 @@ app.UseLoggerMiddleware();
 //}
 
 app.UseHttpsRedirection();
-app.UseCors(c => c.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+//app.UseCors(c => c.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseCors("CorsPolicy");
 
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.UseAuthentication();
 app.UseAuthorization();

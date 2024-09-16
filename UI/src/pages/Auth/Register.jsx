@@ -62,10 +62,6 @@ const Register = ({ setIsLogin }) => {
     }
   };
 
-  useEffect(() => {
-    console.log(formData.image.name);
-  }, [formData.image]);
-
   return (
     <Box className="loginCard">
       <div style={{ width: "80%" }}>
@@ -76,7 +72,7 @@ const Register = ({ setIsLogin }) => {
         <CardContent>
           <div className="inputLabel">{FormResources.userRegistration.emailLabel}</div>
           <TextField
-            error={formErrors["email"]}
+            error={Boolean(formErrors["email"])}
             variant="outlined"
             name="email"
             value={formData.email}
@@ -89,7 +85,7 @@ const Register = ({ setIsLogin }) => {
         <CardContent>
           <div className="inputLabel">{FormResources.userRegistration.userNameLabel}</div>
           <TextField
-            error={formErrors["userName"]}
+            error={Boolean(formErrors["userName"])}
             variant="outlined"
             type="text"
             name="userName"
@@ -104,7 +100,7 @@ const Register = ({ setIsLogin }) => {
           <div className="inputLabel">{FormResources.userLogin.passwordLabel}</div>
 
           <TextField
-            error={formErrors["password"]}
+            error={Boolean(formErrors["password"])}
             variant="outlined"
             type="password"
             name="password"
@@ -134,7 +130,7 @@ const Register = ({ setIsLogin }) => {
         <CardContent>
           <div className="inputLabel">Add a description to your profile</div>
           <TextField
-            error={formErrors["description"]}
+            error={Boolean(formErrors["description"])}
             variant="outlined"
             name="description"
             value={formData.description}

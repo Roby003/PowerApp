@@ -46,7 +46,7 @@ function WriteComment({ workoutId, reloadComments }) {
           placeholder={Resources.WriteComment}
           value={comment.content}
           onChange={onChangeInput}
-          error={errors.content}
+          error={Boolean(errors.content)}
           size="small"
         />
         <Button variant="text" onClick={handleSubmit}>

@@ -26,5 +26,11 @@ namespace API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("notification/checkNew")]
+        public async Task<bool> CheckNewNotif()
+        {
+            return await notificationService.CheckNewNotif();
+        }
     }
 }

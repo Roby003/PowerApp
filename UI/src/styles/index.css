@@ -1380,3 +1380,8 @@ input::-webkit-inner-spin-button {
 .notificationMenu .MuiPaper-root {
   border-radius: 20px;
 }
+
+.notificationMenuSubtitle {
+  font-weight: bold;
+  margin-left: 8px;
+}

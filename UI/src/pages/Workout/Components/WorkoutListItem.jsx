@@ -192,7 +192,7 @@ function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
               <CardContent>
                 <FormControl>
                   <TextField
-                    error={formErrors.title}
+                    error={Boolean(formErrors.title)}
                     name="title"
                     value={formData.title}
                     id="outlined-basic"

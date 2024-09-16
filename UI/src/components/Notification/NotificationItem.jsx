@@ -10,6 +10,7 @@ function NotificationItem({ notification, handleClose }) {
   const [image, setImage] = useState(null);
   const { getUserImage } = useAuthService();
   const { parseTimeSpan } = useUtils();
+
   useEffect(() => {
     async function load() {
       setImage(await getUserImage(notification.createdBy));
@@ -17,6 +18,7 @@ function NotificationItem({ notification, handleClose }) {
 
     load();
   }, []);
+
   const navigate = useNavigate();
   const [userName, ...rest] = notification.description.split(" ");
 
@@ -60,7 +62,13 @@ function NotificationItem({ notification, handleClose }) {
   return (
     <>
       {notification.workoutId === null ? (
-        <MenuItem sx={{ paddingLeft: 1 }} className="noHoverEffects" disableRipple onClick={() => {}}>
+        <MenuItem
+          sx={{ paddingLeft: 1 }}
+          className="noHoverEffects"
+          id={`notif${notification.notificationId}`}
+          disableRipple
+          onClick={() => {}}
+        >
           <div style={{ maxWidth: 470, overflow: "hidden" }}>
             <div className="row noWrap alignCenter">
               {image ? (
@@ -90,7 +98,11 @@ function NotificationItem({ notification, handleClose }) {
           {giveTimePassed()}
         </MenuItem>
       ) : (
-        <MenuItem sx={{ paddingLeft: 1 }} onClick={() => handleOpenWorkout()}>
+        <MenuItem
+          sx={{ paddingLeft: 1 }}
+          onClick={() => handleOpenWorkout()}
+          id={`notif${notification.notificationId}`}
+        >
           <div style={{ maxWidth: 470, overflow: "hidden" }}>
             <div className="row noWrap alignCenter">
               {image ? (
