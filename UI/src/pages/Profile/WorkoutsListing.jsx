@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { LogWorkoutProvider } from "../../contexts/LogWorkoutContext";
 import Resources from "../../statics/Resources";
+import useUtils from "../../utils/Utils";
 import WorkoutListItem from "../Workout/Components/WorkoutListItem";
 import EmptyFeedCard from "./EmptyFeedCard";
 import NoWorkoutsCard from "./NoWorkoutsCard";
@@ -13,7 +14,7 @@ export default function WorkoutsListing({ getWorkouts, getWorkoutsByActivity, us
   const [paginationState, setPaginationState] = useState(PAGINATION_CONSTANT);
   const [triggerReload, setTriggerReload] = useState(false);
   const [filter, setFilter] = useState(false);
-
+  const { fetchDataForScroll } = useUtils();
   useEffect(() => {
     async function loadFromDb() {
       setWorkouts(
@@ -24,11 +25,18 @@ export default function WorkoutsListing({ getWorkouts, getWorkoutsByActivity, us
   }, [userId, triggerReload, filter]);
 
   async function fetchData() {
-    setWorkouts(
-      filter
-        ? await getWorkoutsByActivity(paginationState + PAGINATION_CONSTANT, 0, userId)
-        : await getWorkouts(paginationState + PAGINATION_CONSTANT, 0, userId)
-    );
+    filter
+      ? await fetchDataForScroll(
+          setWorkouts,
+          paginationState,
+          async () => await getWorkoutsByActivity(paginationState + PAGINATION_CONSTANT, 0, userId)
+        )
+      : await fetchDataForScroll(
+          setWorkouts,
+          paginationState,
+          async () => await getWorkouts(paginationState + PAGINATION_CONSTANT, 0, userId)
+        );
+
     setPaginationState(paginationState + PAGINATION_CONSTANT);
   }
   return (

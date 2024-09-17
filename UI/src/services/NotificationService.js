@@ -8,10 +8,18 @@ const useNotificationService = () => {
     return await api.get(ApiPaths.GetNotifications(take));
   };
 
+  const getNotificationsMarkAsRead = async (take) => {
+    return await api.get(ApiPaths.GetNotificationsMarkAsRead(take));
+  };
+
   const checkNewNotif = async () => {
     return await api.get(ApiPaths.CheckNewNotif);
   };
-  return { getNotifications, checkNewNotif };
+
+  const markAsRead = async (list) => {
+    return await api.post(ApiPaths.MarkRead, { Ids: list });
+  };
+  return { getNotifications, checkNewNotif, getNotificationsMarkAsRead, markAsRead };
 };
 
 export default useNotificationService;

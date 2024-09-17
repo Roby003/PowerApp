@@ -71,6 +71,8 @@ export default {
   RemoveApplication: (applicationId) => `/role/application/remove?applicationId=${applicationId}`,
   CheckForApplication: (userId) => `/role/application/checkUser?userId=${userId}`,
 
+  GetNotificationsMarkAsRead: (take) => `/notification/markRead?take=${take}`,
   GetNotifications: (take) => `/notification?take=${take}`,
+  MarkRead: "/notification/markRead",
   CheckNewNotif: "/notification/checkNew",
 };

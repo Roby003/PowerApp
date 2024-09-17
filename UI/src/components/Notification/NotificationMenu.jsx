@@ -11,27 +11,39 @@ const PAGINATION_CONSTANT = 6;
 function NotificationMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const [notifications, setNotifications] = React.useState([]);
-  const { getNotifications, checkNewNotif } = useNotificationService();
+  const [notifications, setNotifications] = React.useState({ newNotifications: [], oldNotifications: [] });
+  const { getNotifications, checkNewNotif, markAsRead } = useNotificationService();
   const [paginationState, setPaginationState] = useState(PAGINATION_CONSTANT);
   const [newNotif, setNewNotif] = useState(false);
-  const handleClick = (event) => {
+
+  const handleClick = async (event) => {
     setAnchorEl(event.currentTarget);
+    await markAsRead([
+      ...notifications.newNotifications.map((n) => n.notificationId),
+      ...notifications.oldNotifications.map((n) => n.notificationId),
+    ]);
   };
   const handleClose = () => {
     setAnchorEl(null);
+    setNewNotif(false);
   };
 
   React.useEffect(() => {
     async function load() {
-      Boolean(anchorEl) ? setNotifications(await getNotifications(paginationState)) : {};
+      setNotifications(await getNotifications(paginationState));
       setNewNotif(await checkNewNotif());
     }
     load();
-  }, [anchorEl]);
+
+    console.log("first use effect");
+  }, []);
 
   async function fetchData() {
-    setNotifications(await getNotifications(paginationState + PAGINATION_CONSTANT));
+    var newNotif = await getNotifications(paginationState + PAGINATION_CONSTANT);
+    setNotifications((n) => ({
+      newNotifications: [...n.newNotifications],
+      oldNotifications: [...n.oldNotifications, ...newNotif.oldNotifications.slice(n.oldNotifications.length)],
+    }));
     setPaginationState(paginationState + PAGINATION_CONSTANT);
   }
 
@@ -53,7 +65,7 @@ function NotificationMenu() {
 
       async function load() {
         setTimeout(async () => {
-          setNewNotif(await checkNewNotif());
+          !open ? setNewNotif(await checkNewNotif()) : {};
           setNotifications(await getNotifications(paginationState));
         }, 2000);
       }
@@ -110,7 +122,7 @@ function NotificationMenu() {
           className="notificationMenu"
         >
           <InfiniteScroll
-            dataLength={notifications.length}
+            dataLength={notifications.oldNotifications.length + notifications.newNotifications.length}
             next={fetchData}
             loader={<h4>Loading...</h4>}
             height="100%"
@@ -118,29 +130,33 @@ function NotificationMenu() {
             style={{ maxHeight: "300px" }}
           >
             <>
-              {newNotif && <div className="subTitle notificationMenuSubtitle">New</div>}
-              {notifications.map((notification) => {
-                if (notification.isRead == false)
-                  return (
-                    <NotificationItem
-                      key={notification.timeSpanDiff}
-                      notification={notification}
-                      handleClose={handleClose}
-                    />
-                  );
-              })}
+              {notifications.newNotifications && notifications.newNotifications.length > 0 && (
+                <div className="subTitle notificationMenuSubtitle">New</div>
+              )}
+              {notifications.newNotifications &&
+                notifications.newNotifications.map((notification) => {
+                  if (notification.isRead == false)
+                    return (
+                      <NotificationItem
+                        key={notification.timeSpanDiff}
+                        notification={notification}
+                        handleClose={handleClose}
+                      />
+                    );
+                })}
               <div className="subTitle notificationMenuSubtitle">Old</div>
-              {notifications.map((notification) => {
-                if (notification.isRead == true) {
-                  return (
-                    <NotificationItem
-                      key={notification.timeSpanDiff}
-                      notification={notification}
-                      handleClose={handleClose}
-                    />
-                  );
-                }
-              })}
+              {notifications.oldNotifications &&
+                notifications.oldNotifications.map((notification) => {
+                  if (notification.isRead == true) {
+                    return (
+                      <NotificationItem
+                        key={notification.timeSpanDiff}
+                        notification={notification}
+                        handleClose={handleClose}
+                      />
+                    );
+                  }
+                })}
             </>
           </InfiniteScroll>
         </Menu>

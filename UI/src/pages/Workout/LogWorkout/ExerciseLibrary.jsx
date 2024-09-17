@@ -15,6 +15,7 @@ import { Alert, Divider, InputAdornment, OutlinedInput } from "@mui/material";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useLogContext } from "../../../contexts/LogWorkoutContext.jsx";
 import Resources from "../../../statics/Resources.js";
+import useUtils from "../../../utils/Utils.js";
 import ExerciseListItem from "./Components/ExerciseListItem.jsx";
 export default function ExerciseLibrary() {
   const PAGINATION_CONSTANT = 10;
@@ -26,7 +27,7 @@ export default function ExerciseLibrary() {
   const [paginationState, setPaginationState] = React.useState(PAGINATION_CONSTANT);
   const { exerciseUsedAlert } = useLogContext();
   const [triggerSearch, setTriggerSearch] = React.useState(false);
-
+  const { fetchDataForScroll } = useUtils();
   const handleChange = async (event) => {
     setPaginationState(PAGINATION_CONSTANT);
     setMuscleSelect(event.target.value);
@@ -36,12 +37,6 @@ export default function ExerciseLibrary() {
           await getExercisesByCategory(
             [PAGINATION_CONSTANT, 0],
             ["exerciseId", 1],
-            // [
-            //   ["categoryId", event.target.value],
-            //   ["isActive", 1],
-            // ]
-
-            // ////////////////////////
 
             inputRef.current.value == ""
               ? [
@@ -124,24 +119,31 @@ export default function ExerciseLibrary() {
   }
   async function fetchData() {
     muscleSelect === "default"
-      ? setExerciseList(await getExercisesAll(paginationState + PAGINATION_CONSTANT, 0, inputRef.current.value))
-      : setExerciseList(
-          await getExercisesByCategory(
-            [paginationState + PAGINATION_CONSTANT, 0],
-            ["exerciseId", 1],
-            muscleSelect === ""
-              ? []
-              : inputRef.current.value == ""
-              ? [
-                  ["categoryId", muscleSelect],
-                  ["isActive", 1],
-                ]
-              : [
-                  ["categoryId", muscleSelect],
-                  ["isActive", 1],
-                  ["name", inputRef.current.value],
-                ]
-          )
+      ? await fetchDataForScroll(
+          setExerciseList,
+          paginationState,
+          async () => await getExercisesAll(paginationState + PAGINATION_CONSTANT, 0, inputRef.current.value)
+        )
+      : await fetchDataForScroll(
+          setExerciseList,
+          paginationState,
+          async () =>
+            await getExercisesByCategory(
+              [paginationState + PAGINATION_CONSTANT, 0],
+              ["exerciseId", 1],
+              muscleSelect === ""
+                ? []
+                : inputRef.current.value == ""
+                ? [
+                    ["categoryId", muscleSelect],
+                    ["isActive", 1],
+                  ]
+                : [
+                    ["categoryId", muscleSelect],
+                    ["isActive", 1],
+                    ["name", inputRef.current.value],
+                  ]
+            )
         );
 
     setPaginationState(paginationState + PAGINATION_CONSTANT);

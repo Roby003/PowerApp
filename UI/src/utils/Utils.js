@@ -72,5 +72,10 @@ export default function useUtils() {
       seconds,
     };
   }
-  return { BuildQueryJson, parseDate, stringFormat, getPath, parseTimeSpan };
+
+  async function fetchDataForScroll(setter, index, asyncGet) {
+    var newData = await asyncGet();
+    setter((oldData) => [...oldData, ...newData.slice(index)]);
+  }
+  return { BuildQueryJson, parseDate, stringFormat, getPath, parseTimeSpan, fetchDataForScroll };
 }

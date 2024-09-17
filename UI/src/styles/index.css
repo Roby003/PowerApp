@@ -1188,6 +1188,7 @@ input::-webkit-inner-spin-button {
 
 .feedLeftSide {
   padding-right: 10%;
+  position: sticky;
 }
 .searchUsersFeed {
   height: 250px;

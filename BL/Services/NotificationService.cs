@@ -31,24 +31,46 @@ namespace BL.Services
         }
 
 
-        public async Task<List<ShowNotificationDTO>> GetNotifications(int take)
+        //public async Task<List<ShowNotificationDTO>> GetNotificationsMarkAsRead(int take)
+        //{
+
+        //    var currentUserId= CurrentUser.Id();
+        //    var notifications = await UnitOfWork.Queryable<Notification>().Where(n => n.TargetId == currentUserId).OrderByDescending(n=>n.CreatedDate).Take(take).ToListAsync();
+        //    var notifToSend = Mapper.Map<Notification, ShowNotificationDTO>(notifications);
+
+        //    notifications.ForEach(notification => { notification.IsRead = true; });
+        //    UnitOfWork.Repository<Notification>().UpdateRange(notifications);
+        //    await Save();
+        //    return notifToSend;
+        //}
+
+        public async Task<NotificationsListDTO> GetNotifications(int take)
         {
+            var currentUserId = CurrentUser.Id();
+            var newNotif = Mapper.Map<Notification, ShowNotificationDTO>(await UnitOfWork.Queryable<Notification>()
+                .Where(n => n.TargetId == currentUserId && n.IsRead == false)
+                .OrderByDescending(n => n.CreatedDate).Take(take).ToListAsync());
 
-            var currentUserId= CurrentUser.Id();
-            var notifications = await UnitOfWork.Queryable<Notification>().Where(n => n.TargetId == currentUserId).OrderByDescending(n=>n.CreatedDate).Take(take).ToListAsync();
-            var notifToSend = Mapper.Map<Notification, ShowNotificationDTO>(notifications);
+            var oldNotif =  Mapper.Map<Notification, ShowNotificationDTO>(await UnitOfWork.Queryable<Notification>()
+                .Where(n => n.TargetId == currentUserId && n.IsRead == true)
+                .OrderByDescending(n => n.CreatedDate).Take(take).ToListAsync());
 
-            notifications.ForEach(notification => { notification.IsRead = true; });
-            UnitOfWork.Repository<Notification>().UpdateRange(notifications);
-            await Save();
-            return notifToSend;
+            return new NotificationsListDTO { NewNotifications=newNotif, OldNotifications=oldNotif };
         }
-
         public async Task<bool> CheckNewNotif()
         {
             var currentUserId = CurrentUser.Id();
             return await UnitOfWork.Queryable<Notification>().Where(u => u.TargetId == currentUserId && u.IsRead == false).AnyAsync();
         }
    
+        public async Task<int> MarkAsRead (NotifMarkReadDTO list)
+        {
+            var currentUserId = CurrentUser.Id();
+            var notifications = await UnitOfWork.Queryable<Notification>().Where(n => n.TargetId == currentUserId && list.Ids.Contains(n.NotificationId)).ToListAsync();
+
+            notifications.ForEach(notification => { notification.IsRead = true; });
+            UnitOfWork.Repository<Notification>().UpdateRange(notifications);
+            return await Save();
+        }
     }
 }
