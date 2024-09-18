@@ -1189,6 +1189,8 @@ input::-webkit-inner-spin-button {
 .feedLeftSide {
   padding-right: 10%;
   position: sticky;
+  height: fit-content;
+  top: 10px;
 }
 .searchUsersFeed {
   height: 250px;
@@ -1355,8 +1357,8 @@ input::-webkit-inner-spin-button {
 .workoutModalCard {
   position: absolute;
   inset: 50% auto auto 50%;
-  border: 1px solid rgb(204, 204, 204);
-  background: rgb(255, 255, 255);
+  border: 1px solid #cccccc;
+  background: #ffffff;
   overflow: auto;
   border-radius: 8px;
   outline: none;

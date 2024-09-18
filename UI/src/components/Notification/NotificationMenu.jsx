@@ -34,8 +34,6 @@ function NotificationMenu() {
       setNewNotif(await checkNewNotif());
     }
     load();
-
-    console.log("first use effect");
   }, []);
 
   async function fetchData() {
