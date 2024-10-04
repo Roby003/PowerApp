@@ -18,4 +18,6 @@ public partial class Image
     public virtual ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
+
+    public virtual ICollection<Workout> Workouts { get; set; } = new List<Workout>();
 }

@@ -6,8 +6,14 @@ const useImageService = () => {
   const getImage = async (imageId) => {
     return imageId !== null ? await api.get(ApiPaths.GetImage(imageId)) : "";
   };
+
+
+  const getImageList = async (idList)=>{
+    return await api.post(ApiPaths.GetImageList,{ImageIds:idList})
+  }
   return {
-   getImage
+   getImage,getImageList
+   
   };
 };
 

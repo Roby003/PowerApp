@@ -1,12 +1,17 @@
 ﻿using API.Attributes;
 using BL.Services;
 using Common.Enums;
+using DA.Entities;
 using DTOs.Query;
 using DTOs.Set;
 using DTOs.Users;
 using DTOs.Workout;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Net.Http.Formatting;
+using System.Text.Json.Serialization;
+using Utils;
 
 namespace API.Controllers
 {
@@ -24,10 +29,27 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("workout")]
-        [Validate<LogWorkoutDTO>]
-        public async Task<int> CreateWorkout(LogWorkoutDTO logWorkoutDTO)
+        [Validate<IFormCollection>]
+        public async Task<int> CreateWorkout(IFormCollection form)
         {
-            return await workoutService.CreateWorkout(logWorkoutDTO);
+            var dto = new LogWorkoutDTO
+            {
+                setsDto = JsonConvert.DeserializeObject<List<AddSetDTO>>(form["setsDto"]) ?? new List<AddSetDTO>(),
+                Note = form["Note"]=="undefined" ? String.Empty : form["Note"],
+                ImageList = form.Files.ToList(),
+             
+            };
+            if ( form["TemplateId"]=="null")
+            {
+                dto.TemplateId = null;
+            }
+            else
+            {
+                dto.TemplateId = Int32.Parse(form["TemplateId"]!);
+            }
+            
+
+            return await workoutService.CreateWorkout(dto);
         }
 
         [HttpGet]

@@ -1388,3 +1388,39 @@ input::-webkit-inner-spin-button {
   font-weight: bold;
   margin-left: 8px;
 }
+
+.workoutImage {
+  margin-top: 5px;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  display: block;
+  flex-grow: 0;
+  flex-shrink: 0;
+  transition: translate 300ms ease-in-out;
+  border-radius: 6px;
+}
+
+.img-slider-btn {
+  all: unset;
+  margin-top: 5px;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding: 1rem;
+  cursor: pointer;
+  transition: background-color 100ms ease-in-out;
+}
+
+.img-slider-dot {
+  cursor: pointer;
+}
+.img-slider-btn:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.img-slider-btn > * {
+  stroke: white;
+  fill: black;
+}

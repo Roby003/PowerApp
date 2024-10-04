@@ -15,17 +15,21 @@ export default function ProfilePage({ userId = null }) {
       {userId == null ? (
         <>
           <ProfileInfo userId={id} />
-          <WorkoutsListing getWorkouts={getPersonalWorkouts} userId={id} ownPageFlag={ownPageFlag} />
+          <div style={{ maxWidth: 660 }}>
+            <WorkoutsListing getWorkouts={getPersonalWorkouts} userId={id} ownPageFlag={ownPageFlag} />
+          </div>
         </>
       ) : (
         <>
           <ProfileInfo userId={userId} />
-          <WorkoutsListing
-            getWorkouts={getPersonalWorkouts}
-            getWorkoutsByActivity={getPersonalWorkoutsByActivity}
-            userId={userId}
-            ownPageFlag={ownPageFlag}
-          />
+          <div style={{ maxWidth: 660 }}>
+            <WorkoutsListing
+              getWorkouts={getPersonalWorkouts}
+              getWorkoutsByActivity={getPersonalWorkoutsByActivity}
+              userId={userId}
+              ownPageFlag={ownPageFlag}
+            />
+          </div>
         </>
       )}
     </>

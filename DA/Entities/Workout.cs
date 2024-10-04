@@ -36,4 +36,6 @@ public partial class Workout
     public virtual Template? Template { get; set; }
 
     public virtual User User { get; set; } = null!;
+
+    public virtual ICollection<Image> Images { get; set; } = new List<Image>();
 }

@@ -5,7 +5,7 @@ const useWorkoutService = () => {
   const api = useApi();
 
   const postWorkout = async (logWorkoutDTO) => {
-    await api.post(ApiPaths.PostWorkout, logWorkoutDTO);
+    await api.post(ApiPaths.PostWorkout, logWorkoutDTO, true);
   };
 
   const getPersonalWorkouts = async (take, skip, userId) => {

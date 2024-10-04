@@ -30,4 +30,6 @@ export default {
   addCategory: "/admin/category/create",
 
   coachApplications: "/admin/applications/coach",
+
+  stats: "/statistics",
 };

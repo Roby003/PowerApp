@@ -45,6 +45,7 @@ export default {
   GetCategories: "/category/getAll",
   GetCategoriesByTemplate: (templateId) => `/category/getByTemplate?templateId=${templateId}`,
   GetImage: (imageId) => `/image?imageId=${imageId}`,
+  GetImageList: "/image/getList",
   UpdateCategory: "/category/update",
   RemoveCategory: (categoryId) => `/category/remove?categoryId=${categoryId}`,
   AddCategory: "/category",
@@ -75,4 +76,7 @@ export default {
   GetNotifications: (take) => `/notification?take=${take}`,
   MarkRead: "/notification/markRead",
   CheckNewNotif: "/notification/checkNew",
+
+  GetStatsForExercise: (exerciseId, userId) => `/stats/exercise?exerciseId=${exerciseId}&userId=${userId}`,
+  GetStatsFor1RM: (exerciseId, userId) => `/stats/exercise/1RM?exerciseId=${exerciseId}&userId=${userId}`,
 };

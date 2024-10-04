@@ -48,7 +48,19 @@ public partial class PowerAppContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<Vw1Rm> Vw1Rms { get; set; }
+
+    public virtual DbSet<VwAvgExertion> VwAvgExertions { get; set; }
+
     public virtual DbSet<VwExercise> VwExercises { get; set; }
+
+    public virtual DbSet<VwStatsForTemplateProgress> VwStatsForTemplateProgresses { get; set; }
+
+    public virtual DbSet<VwStatsPerExercisePerWeek> VwStatsPerExercisePerWeeks { get; set; }
+
+    public virtual DbSet<VwStatsPerWeek> VwStatsPerWeeks { get; set; }
+
+    public virtual DbSet<VwSuggestedAthlete> VwSuggestedAthletes { get; set; }
 
     public virtual DbSet<VwWorkoutsThisWeek> VwWorkoutsThisWeeks { get; set; }
 
@@ -407,6 +419,31 @@ public partial class PowerAppContext : DbContext
                     });
         });
 
+        modelBuilder.Entity<Vw1Rm>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("Vw1RM");
+
+            entity.Property(e => e.ExerciseId).HasColumnName("exerciseId");
+            entity.Property(e => e.Userid).HasColumnName("userid");
+            entity.Property(e => e.WorkoutId).HasColumnName("workoutId");
+            entity.Property(e => e._1rm)
+                .HasColumnType("numeric(27, 4)")
+                .HasColumnName("_1RM");
+        });
+
+        modelBuilder.Entity<VwAvgExertion>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwAvgExertion");
+
+            entity.Property(e => e.AvgLast3Weeks).HasColumnType("numeric(38, 6)");
+            entity.Property(e => e.AvgOverTime).HasColumnType("numeric(38, 6)");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+        });
+
         modelBuilder.Entity<VwExercise>(entity =>
         {
             entity
@@ -414,6 +451,50 @@ public partial class PowerAppContext : DbContext
                 .ToView("VwExercises");
 
             entity.Property(e => e.Name).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<VwStatsForTemplateProgress>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwStatsForTemplateProgress");
+
+            entity.Property(e => e.IncreaseFromLastWorkout).HasColumnType("decimal(21, 13)");
+            entity.Property(e => e.TemplateId).HasColumnName("templateId");
+            entity.Property(e => e.WorkoutId).HasColumnName("workoutId");
+        });
+
+        modelBuilder.Entity<VwStatsPerExercisePerWeek>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwStatsPerExercisePerWeek");
+
+            entity.Property(e => e.ExerciseId).HasColumnName("exerciseId");
+            entity.Property(e => e.FirstDayOfWeek).HasColumnType("datetime");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+        });
+
+        modelBuilder.Entity<VwStatsPerWeek>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwStatsPerWeek");
+
+            entity.Property(e => e.ExertionIndex).HasColumnType("numeric(13, 1)");
+            entity.Property(e => e.FirstDayOfWeek).HasColumnType("datetime");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+        });
+
+        modelBuilder.Entity<VwSuggestedAthlete>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwSuggestedAthletes");
+
+            entity.Property(e => e.Username)
+                .HasMaxLength(200)
+                .HasColumnName("username");
         });
 
         modelBuilder.Entity<VwWorkoutsThisWeek>(entity =>
@@ -450,6 +531,21 @@ public partial class PowerAppContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_WORKOUT_USER");
+
+            entity.HasMany(d => d.Images).WithMany(p => p.Workouts)
+                .UsingEntity<Dictionary<string, object>>(
+                    "WorkoutImage",
+                    r => r.HasOne<Image>().WithMany()
+                        .HasForeignKey("ImageId")
+                        .HasConstraintName("FK_WORKOUTIMAGE_IMAGE"),
+                    l => l.HasOne<Workout>().WithMany()
+                        .HasForeignKey("WorkoutId")
+                        .HasConstraintName("FK_WORKOUTIMAGE_WORKOUT"),
+                    j =>
+                    {
+                        j.HasKey("WorkoutId", "ImageId").HasName("PK__WORKOUT___369545713235817E");
+                        j.ToTable("WORKOUT_IMAGE");
+                    });
         });
 
         OnModelCreatingPartial(modelBuilder);

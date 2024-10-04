@@ -20,6 +20,7 @@ import EditUser from "../pages/Profile/Edit/EditUser";
 import MyProfile from "../pages/Profile/MyProfile";
 import ProfilePage from "../pages/Profile/ProfilePage";
 import LogWorkout from "../pages/Workout/LogWorkout/LogWorkout";
+import StatsHomePage from "../pages/Stats/StatsHomePage";
 export default function configRouter() {
   return createBrowserRouter([
     {
@@ -114,6 +115,21 @@ export default function configRouter() {
               <EditUser />
             </AuthenticatedRoute>
           ),
+        },
+        {
+          path: Paths.stats,
+          element: (
+            <AuthenticatedRoute>
+              <StatsHomePage />
+            </AuthenticatedRoute>
+          ),
+          get element() {
+            return this._element;
+          },
+          set element(value) {
+            this._element = value;
+          },
+          children: [{}],
         },
         {
           path: "*",

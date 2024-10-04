@@ -18,7 +18,7 @@ function CommentListWithScroll({ workoutId, reloadComments, ownPageFlag }) {
   const { getCommentsByWorkout, getNumberOfCommentsByWorkout, removeComment } = useCommentService();
   const [takeComments, setTakeComments] = useState(TAKE_COMMENTS_CONSTANT);
   const [numberOfComments, setNumberOfComments] = useState();
-
+  const { fetchDataForScroll } = useUtils();
   const { parseDate } = useUtils();
   useEffect(() => {
     async function loadFromDb() {
@@ -44,7 +44,12 @@ function CommentListWithScroll({ workoutId, reloadComments, ownPageFlag }) {
   };
 
   async function fetchData() {
-    setComments(await getCommentsByWorkout(workoutId, takeComments + TAKE_COMMENTS_CONSTANT));
+    await fetchDataForScroll(
+      setComments,
+      takeComments,
+      async () => await getCommentsByWorkout(workoutId, takeComments + TAKE_COMMENTS_CONSTANT)
+    );
+    // setComments(await getCommentsByWorkout(workoutId, takeComments + TAKE_COMMENTS_CONSTANT));
     setTakeComments(takeComments + TAKE_COMMENTS_CONSTANT);
   }
 

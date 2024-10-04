@@ -6,6 +6,7 @@ import FormControl from "@mui/material/FormControl";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import { Alert, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -18,9 +19,23 @@ import VALIDATIONS from "../../../validations";
 import { useValidation } from "../../../validations/useValidation";
 import Validator from "../../../validations/Validator";
 import ExerciseLogItem from "./Components/ExerciseLogItem";
+import { styled } from "@mui/material/styles";
+
 export default function LogWorkoutCard() {
   const { exerciseListObj, createTemplateFromWrk, logWorkout, templateIdState, pullPreviousWorkout } = useLogContext();
   const [note, setNote] = React.useState();
+  const [imageList, setImageList] = React.useState([]);
+  const VisuallyHiddenInput = styled("input")({
+    clip: "rect(0 0 0 0)",
+    clipPath: "inset(50%)",
+    height: 1,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    whiteSpace: "nowrap",
+    width: 1,
+  });
   const validator = new Validator()
     .forProperty("title")
     .check(VALIDATIONS.isRequired, "title is required")
@@ -78,7 +93,8 @@ export default function LogWorkoutCard() {
 
   const handleLogSubmit = async () => {
     try {
-      await logWorkout(note, applyErrorsFromApiForLog).then(() =>
+      debugger;
+      await logWorkout(note, imageList, applyErrorsFromApiForLog).then(() =>
         navigate(`${Paths.profileBuilder}${userSession.user().id}`)
       );
     } catch (err) {
@@ -105,15 +121,13 @@ export default function LogWorkoutCard() {
         <CardContent className="noPaddingTop">
           {exerciseListObj &&
             Object.keys(exerciseListObj).map((exId) => (
-              <>
-                <ExerciseLogItem
-                  key={exId}
-                  exercise={exerciseListObj[exId].exercise}
-                  setList={exerciseListObj[exId].setList}
-                  image={exerciseListObj[exId].image}
-                  clearLogErrors={clearLogErrors}
-                />
-              </>
+              <ExerciseLogItem
+                key={exId.trim()}
+                exercise={exerciseListObj[exId].exercise}
+                setList={exerciseListObj[exId].setList}
+                image={exerciseListObj[exId].image}
+                clearLogErrors={clearLogErrors}
+              />
             ))}
 
           <div className="input-wrapper">
@@ -198,6 +212,35 @@ export default function LogWorkoutCard() {
               </Button>
             </div>
           </Popover>
+        </CardContent>
+        <CardContent>
+          <div className="row">
+            <div className="col-3">
+              <div className="inputLabel">{Resources.ImageSelect}</div>
+
+              <Button
+                component="label"
+                role={undefined}
+                variant="outlined"
+                tabIndex={-1}
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload files
+                <VisuallyHiddenInput
+                  type="file"
+                  onChange={(e) => {
+                    setImageList([
+                      ...imageList,
+                      e.target.files && e.target.files.length > 0 ? e.target.files[0] : undefined,
+                    ]);
+                  }}
+                />
+              </Button>
+              {imageList.map((file) => (
+                <div style={{ alignItems: "center" }}>{file.name}</div>
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
     </Box>

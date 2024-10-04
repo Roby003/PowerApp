@@ -17,7 +17,7 @@ function NotificationMenu() {
   const [newNotif, setNewNotif] = useState(false);
 
   const handleClick = async (event) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(document.getElementById("anchor-div"));
     await markAsRead([
       ...notifications.newNotifications.map((n) => n.notificationId),
       ...notifications.oldNotifications.map((n) => n.notificationId),
@@ -31,7 +31,7 @@ function NotificationMenu() {
   React.useEffect(() => {
     async function load() {
       setNotifications(await getNotifications(paginationState));
-      setNewNotif(await checkNewNotif());
+      handleIconChange();
     }
     load();
   }, []);
@@ -43,6 +43,9 @@ function NotificationMenu() {
       oldNotifications: [...n.oldNotifications, ...newNotif.oldNotifications.slice(n.oldNotifications.length)],
     }));
     setPaginationState(paginationState + PAGINATION_CONSTANT);
+  }
+  async function handleIconChange() {
+    setNewNotif(await checkNewNotif());
   }
 
   React.useEffect(() => {
@@ -63,7 +66,7 @@ function NotificationMenu() {
 
       async function load() {
         setTimeout(async () => {
-          !open ? setNewNotif(await checkNewNotif()) : {};
+          handleIconChange();
           setNotifications(await getNotifications(paginationState));
         }, 2000);
       }
@@ -78,10 +81,10 @@ function NotificationMenu() {
 
   return (
     <CardActionArea>
-      <div>
+      <div id="anchor-div">
         {newNotif ? (
           <NotificationsActiveIcon
-            id="basic-button"
+            id="basic-button2"
             aria-controls={open ? "basic-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
@@ -91,7 +94,7 @@ function NotificationMenu() {
           />
         ) : (
           <NotificationsNoneOutlinedIcon
-            id="basic-button"
+            id="basic-button2"
             aria-controls={open ? "basic-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}

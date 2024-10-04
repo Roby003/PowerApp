@@ -20,7 +20,7 @@ namespace BL.Services
         private readonly MapperService Mapper;
         private readonly WebSocketService webSocketService;
 
-        public UserService(WebSocketService webSocketService,MapperService mapper, AppUnitOfWork unitOfWork, ILogger logger, IAppSettings appSettings, ClaimsPrincipal currentUser) : base(unitOfWork, logger, appSettings)
+        public UserService(WebSocketService webSocketService, MapperService mapper, AppUnitOfWork unitOfWork, ILogger logger, IAppSettings appSettings, ClaimsPrincipal currentUser) : base(unitOfWork, logger, appSettings)
         {
             CurrentUser = currentUser;
             Mapper = mapper;
@@ -322,9 +322,9 @@ namespace BL.Services
         public async Task RemoveNotification(Guid targetUserId)
         {
             var currentUserId = CurrentUser.Id();
-            var dbNotification = await UnitOfWork.Queryable<Notification>().Where(n => n.IsRead == false && 
-                                                                                  n.CreatedBy == currentUserId && 
-                                                                                  n.TargetId == targetUserId && 
+            var dbNotification = await UnitOfWork.Queryable<Notification>().Where(n => n.IsRead == false &&
+                                                                                  n.CreatedBy == currentUserId &&
+                                                                                  n.TargetId == targetUserId &&
                                                                                   n.NotificationTypeId == (int)NotificationTypes.NewFollow)
                                                                           .FirstOrDefaultAsync();
             if (dbNotification == null) return;
@@ -362,13 +362,21 @@ namespace BL.Services
         {
             var currentUserId = CurrentUser.Id();
             var currentUser = UnitOfWork.Queryable<User>().Where(u => u.Id == currentUserId).First();
-            return await UnitOfWork.Queryable<User>().Include(u => u.Users)
-                .Where(u => u.RoleId == (byte)Roles.Coach)
-                .Where(u => u.Id != currentUserId)
-                .Where(u => !u.Users.Contains(currentUser))
-                .OrderByDescending(u => u.CreatedDate)
-                .Take(5)
-                .Select(u => new UserSmallListItemDTO { UserId = u.Id, UserName = u.UserName }).ToListAsync();
+
+
+            var followedUsersIds = await UnitOfWork.Queryable<User>().Include(u => u.FollowedUsers).Where(u => u.Id == currentUserId)
+                                .SelectMany(u => u.FollowedUsers).Select(f => f.Id).ToListAsync();
+
+
+            return await UnitOfWork.Queryable<VwSuggestedAthlete>()
+                    .Where(u => u.Id != currentUserId && !followedUsersIds.Contains(u.Id))
+                    .OrderByDescending(u => u.NoFollowers)
+                    .Take(5)
+                    .Take(5)
+                    .Select(u => new UserSmallListItemDTO { UserId = u.Id, UserName = u.Username }).ToListAsync();
+
+
+
         }
     }
 }
