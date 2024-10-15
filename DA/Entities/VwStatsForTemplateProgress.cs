@@ -11,6 +11,8 @@ public partial class VwStatsForTemplateProgress
 
     public int? TemplateId { get; set; }
 
+    public DateOnly? CreatedDate { get; set; }
+
     public int? WorkoutVolume { get; set; }
 
     public decimal? IncreaseFromLastWorkout { get; set; }

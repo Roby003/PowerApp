@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace DTOs.Stats
 {
-    public class StatsForExerciseDTO
+    public class VolumeDataForExerciseDTO
     {
-        public int NoSets;
+        public DateOnly FirstDayOfWeek;
         public int TotalVolume;
         public int AvgVolPerSet;
-        public DateTime FirstDayOfWeek;
     }
 }

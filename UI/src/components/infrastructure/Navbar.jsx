@@ -1,5 +1,6 @@
 import AdbIcon from "@mui/icons-material/Adb";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import DensitySmallIcon from "@mui/icons-material/DensitySmall";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -40,9 +41,8 @@ function Navbar() {
   const { isAuth, setIsAuth } = useAccount();
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const navigate = useNavigate();
-  const { getPath } = useUtils();
+  const { getPath, stringFormat } = useUtils();
   const [value, setValue] = React.useState(1);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -88,6 +88,7 @@ function Navbar() {
           },
           { name: "Feed", route: Paths.feed, icon: <DensitySmallIcon /> },
           { name: "Profile", route: Paths.myProfile, icon: <PersonIcon /> },
+          { name: "Stats", route: stringFormat(Paths.stats_builder, userSession.user().id), icon: <BarChartIcon /> },
         ]);
       } else {
         setPages([
@@ -95,6 +96,7 @@ function Navbar() {
           { name: "Feed", route: Paths.feed, icon: <DensitySmallIcon /> },
           { name: "Profile", route: Paths.myProfile, icon: <PersonIcon /> },
           { name: "Admin Panel", route: Paths.admin, icon: <AdminPanelSettingsIcon /> },
+          { name: "Stats", route: stringFormat(Paths.stats_builder, userSession.user().id), icon: <BarChartIcon /> },
         ]);
       }
     }
@@ -107,6 +109,7 @@ function Navbar() {
     if (path == `/feed`) setValue(1);
     if (path == `/workout/create`) setValue(0);
     if (path == `/admin`) setValue(3);
+    if (path.includes("/statistics")) setValue(4);
   }, [window.location.href]);
 
   return (

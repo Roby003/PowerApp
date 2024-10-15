@@ -11,9 +11,9 @@ public partial class Image
 
     public byte[] ContentFile { get; set; } = null!;
 
-    public bool? IsDefaultForExercise { get; set; }
-
     public bool? IsDefaultForUser { get; set; }
+
+    public bool? IsDefaultForExercise { get; set; }
 
     public virtual ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
 

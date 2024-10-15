@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DTOs.Stats
 {
-    public class StatsFor1RMDTO
+    public class PersonalVolumeDataDTO
     {
-        public DateOnly WorkoutDate { get; set; }
-        public decimal? _1RM {  get; set; }
+        public DateOnly FirstDayOfWeek {  get; set; }
+        public int Volume {  get; set; }
     }
 }

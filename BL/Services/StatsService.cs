@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
@@ -28,9 +29,15 @@ namespace BL.Services
             Mapper = mapper;
         }
 
-        public async Task<List<StatsForExerciseDTO>> GetStatsForExercise(int exerciseId, Guid userId)
+        public async Task<List<NoSetsForExerciseDTO>> GetNumberOfSetsForExercise(int exerciseId, Guid userId)
         {
-            return Mapper.Map<VwStatsPerExercisePerWeek, StatsForExerciseDTO>(await UnitOfWork.Queryable<VwStatsPerExercisePerWeek>()
+            return Mapper.Map<VwStatsPerExercisePerWeek, NoSetsForExerciseDTO>(await UnitOfWork.Queryable<VwStatsPerExercisePerWeek>()
+                                                                            .Where(e => e.ExerciseId == exerciseId && e.UserId == userId)
+                                                                            .OrderBy(e => e.FirstDayOfWeek).ToListAsync());
+        }
+        public async Task<List<VolumeDataForExerciseDTO>> GetVolumeDataForExercise(int exerciseId, Guid userId)
+        {
+            return Mapper.Map<VwStatsPerExercisePerWeek, VolumeDataForExerciseDTO>(await UnitOfWork.Queryable<VwStatsPerExercisePerWeek>()
                                                                             .Where(e => e.ExerciseId == exerciseId && e.UserId == userId)
                                                                             .OrderBy(e => e.FirstDayOfWeek).ToListAsync());
         }
@@ -40,9 +47,9 @@ namespace BL.Services
             return await UnitOfWork.Queryable<VwStatsForTemplateProgress>().Where(s => s.TemplateId == templateId)
                 .Select(s => new StatsForTemplateProgressDTO
                 {
-                    IncreaseFromLastWorkout = s.IncreaseFromLastWorkout,
+                    IncreaseFromLastWorkout = s.IncreaseFromLastWorkout * 100 - 100,
                     TotalVolume = s.WorkoutVolume,
-                    WorkoutDate = UnitOfWork.Queryable<Workout>().Where(w => w.WorkoutId == s.WorkoutId).Select(w => w.CreatedDate).First()
+                    WorkoutDate = s.CreatedDate!.Value,
                 }
                 ).ToListAsync();
         }
@@ -50,14 +57,47 @@ namespace BL.Services
         public async Task<List<StatsFor1RMDTO>> GetStats1RM(int exerciseId, Guid userId)
         {
 
-            return await UnitOfWork.Queryable<Vw1Rm>().Where(s => s.ExerciseId == exerciseId && s.Userid == userId)
+            return await UnitOfWork.Queryable<Vw1Rm>().Where(s => s.ExerciseId == exerciseId && s.UserId == userId)
                 .Select(s => new StatsFor1RMDTO
                 {
                     _1RM = s._1rm,
-                    WorkoutDate = UnitOfWork.Queryable<Workout>().Where(w => w.WorkoutId == s.WorkoutId).Select(w => w.CreatedDate).FirstOrDefault()
-                })
-                .ToListAsync();
+                    WorkoutDate = s.CreatedDate!.Value,
+
+                }).ToListAsync();
         }
+
+        public async Task<List<StatsFor1RMDTO>> GetStats1RMbyTemplate(int exerciseId, int templateId)
+        {
+            return await UnitOfWork.Queryable<Vw1Rm>().Where(s => s.ExerciseId == exerciseId && s.TemplateId == templateId)
+                  .Select(s => new StatsFor1RMDTO
+                  {
+                      _1RM = s._1rm,
+                      WorkoutDate = s.CreatedDate!.Value,
+
+                  }).ToListAsync();
+
+        }
+
+
+        public async Task<PersonalAvgExertionDataDTO> GetPersonalAvgExertion(Guid userId)
+        {
+            var aux = await UnitOfWork.Queryable<VwAvgExertion>().Where(s => s.UserId == userId).Select(v => new PersonalAvgExertionDataDTO { AvgLast3Weeks = v.AvgLast3Weeks, AvgOverTime = v.AvgOverTime }).FirstOrDefaultAsync();
+            return aux ?? new PersonalAvgExertionDataDTO { AvgOverTime = null, AvgLast3Weeks = null };
+        }
+
+        public async Task<List<PersonalDataDTO>> GetPersonalData(Guid userId)
+        {
+            return await UnitOfWork.Queryable<VwStatsPerWeek>().Where(s => s.UserId == userId).Select(v => new PersonalDataDTO
+            {
+                AvgRpe = v.AvgRpe.Value,
+                ExertionIndex = v.ExertionIndex.Value,
+                Sets = v.NoSets.Value,
+                Volume = v.TotalVolume.Value,
+                Date = v.FirstDayOfWeek.Value,
+            }).ToListAsync();
+        }
+
+        
 
     }
 }

@@ -50,7 +50,6 @@ function EditUser() {
   const handleSubmit = async () => {
     if (!handleCheckFormErrors()) {
       try {
-        debugger;
         await updateUser(user).then(() => navigate(`${Paths.profileBuilder}${id}`));
       } catch (err) {
         applyErrorsFromApi(err.message.errors);

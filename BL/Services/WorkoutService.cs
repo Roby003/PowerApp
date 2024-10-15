@@ -339,11 +339,13 @@ namespace BL.Services
             }
         }
 
-        public async Task<ShowWorkoutDTO> GetFeaturedWorkout()
+        public async Task<ShowWorkoutDTO?> GetFeaturedWorkout()
         {
 
-            var workout = await UnitOfWork.Queryable<Workout>().Include(w => w.Sets).Include(w => w.User).Where(w => w.IsFeatured == true).FirstAsync();
+            var workout = await UnitOfWork.Queryable<Workout>().Include(w => w.Sets).Include(w => w.User).Where(w => w.IsFeatured == true).FirstOrDefaultAsync();
 
+            if (workout == null)
+                return null;
             var exercises = await UnitOfWork.Queryable<Set>().Where(s => s.WorkoutId == workout.WorkoutId).GroupBy(s => s.Exercise).Select(s => new ShowExerciseDTO
             {
                 ExerciseId = s.Key.ExerciseId,

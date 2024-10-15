@@ -17,5 +17,5 @@ public partial class VwStatsPerExercisePerWeek
 
     public int? AvgVolPerSet { get; set; }
 
-    public DateTime? FirstDayOfWeek { get; set; }
+    public DateOnly? FirstDayOfWeek { get; set; }
 }

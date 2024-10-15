@@ -24,8 +24,12 @@ namespace DTOs.Mappers
         }
         public override void Config(IMapperConfigurationExpression config)
         {
-          
-            config.CreateMap<VwStatsPerExercisePerWeek,StatsForExerciseDTO>();
+
+            config.CreateMap<VwStatsPerExercisePerWeek, NoSetsForExerciseDTO>()
+                .ForMember(dest => dest.FirstDayOfWeek, opt => opt.MapFrom(src => src.FirstDayOfWeek!.Value));
+
+            config.CreateMap<VwStatsPerExercisePerWeek, VolumeDataForExerciseDTO>()
+                .ForMember(dest => dest.FirstDayOfWeek, opt => opt.MapFrom(src => src.FirstDayOfWeek!.Value));
         }
 
     }

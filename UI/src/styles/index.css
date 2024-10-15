@@ -195,6 +195,7 @@ template {
   --color-main-alt: #ff4203;
   --font-color-secondary: rgb(137, 143, 153);
   --background-color: #f9fafb;
+  /* --background-color: #e8eff9; */
 }
 
 html {
@@ -1423,4 +1424,18 @@ input::-webkit-inner-spin-button {
 .img-slider-btn > * {
   stroke: white;
   fill: black;
+}
+
+.exerciseStatsItem {
+  padding: 15px;
+  margin-bottom: 40px;
+
+  /* margin-right: 10px; */
+}
+
+.noDataBanner {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

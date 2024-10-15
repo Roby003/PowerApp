@@ -61,7 +61,7 @@ namespace BL.Services
             }
             else
             {
-                newEx.ImageId = await UnitOfWork.Queryable<Image>().Where(i=> i.IsDefaultForExercise==true).Select(i=>i.ImageId).FirstOrDefaultAsync();
+                newEx.ImageId = await UnitOfWork.Queryable<Image>().Where(i => i.IsDefaultForExercise == true).Select(i => i.ImageId).FirstOrDefaultAsync();
             }
 
             UnitOfWork.GetContext().AttachRange(newEx.Categories);
@@ -86,13 +86,13 @@ namespace BL.Services
 
         }
 
-        public async Task<List<ExerciseListItemDTO>> GetExercises(int take, int skip,string exerciseName)
+        public async Task<List<ExerciseListItemDTO>> GetExercises(int take, int skip, string exerciseName)
         {
 
             return Mapper.Map<VwExercise, ExerciseListItemDTO>(
                  await UnitOfWork.Queryable<VwExercise>()
                      .Where(e => e.IsActive == true)
-                     .Where(e=>String.Empty==exerciseName?true:e.Name.Contains(exerciseName))
+                     .Where(e => String.Empty == exerciseName ? true : e.Name.Contains(exerciseName))
                      .GroupBy(a => a.ExerciseId)
                      .Select(g => g.First())
                      .Skip(skip).Take(take)
@@ -111,6 +111,11 @@ namespace BL.Services
                 .Select(t => t.Exercise.Name).ToListAsync();
         }
 
+        public async Task<List<ExerciseListItemDTO>> GetExerciseInfoByTemplate(int templateId)
+
+        {
+            return Mapper.Map<VwTemplateExerciseExtension,ExerciseListItemDTO>(await UnitOfWork.Queryable<VwTemplateExerciseExtension>().Where(t=>t.TemplateId == templateId).ToListAsync());
+        }
         public async Task<int?> InactivateExercise(int exerciseId)
         {
             var exercise = await UnitOfWork.Queryable<Exercise>().Where(e => e.ExerciseId == exerciseId).FirstOrDefaultAsync();
@@ -167,5 +172,14 @@ namespace BL.Services
         {
             return await UnitOfWork.Queryable<Exercise>().Include(e => e.Image).Where(e => e.ExerciseId == exerciseId).Select(e => e.Image.ContentFile).FirstOrDefaultAsync();
         }
+
+        public async Task<List<ExerciseListItemDTO>> GetExercisesInfo(int take, int skip, string? exerciseName)
+        {
+            return UnitOfWork.GetContext().Set<Exercise>()
+                                    .FromSqlRaw("EXEC GetExerciseInfoForStats @take={0},@skip={1},@name={2}", take, skip,exerciseName).AsEnumerable()
+                                    .Select(e => new ExerciseListItemDTO { ExerciseId = e.ExerciseId, Name = e.Name, ImageId = e.ImageId }).ToList();
+        }
+
+
     }
 }

@@ -8,8 +8,8 @@ namespace DTOs.Stats
 {
     public class StatsForTemplateProgressDTO
     {
-        public DateTime WorkoutDate { get; set; }
-        public decimal? IncreaseFromLastWorkout { get; set; }
+        public DateOnly WorkoutDate { get; set; }
         public int? TotalVolume { get; set; } = null!;
+        public decimal? IncreaseFromLastWorkout { get; set; }
     }
 }

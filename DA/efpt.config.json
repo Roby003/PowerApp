@@ -127,6 +127,10 @@
          "ObjectType": 3
       },
       {
+         "Name": "[dbo].[VwTemplateExerciseExtension]",
+         "ObjectType": 3
+      },
+      {
          "Name": "[dbo].[VwWorkoutsThisWeek]",
          "ObjectType": 3
       }

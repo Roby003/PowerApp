@@ -110,7 +110,6 @@ const LogWorkoutProvider = ({ children }) => {
     let newSetList = exerciseListObj[exId].setList;
     newSetList.splice(index, 1);
 
-    debugger;
     if (exerciseListObj[exId].setList.length === 0) {
       let auxObj = exerciseListObj;
       delete auxObj[exId];

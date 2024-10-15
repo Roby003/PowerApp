@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DTOs.Stats
 {
-    public class StatsFor1RMDTO
+    public class PersonalAvgExertionDataDTO
     {
-        public DateOnly WorkoutDate { get; set; }
-        public decimal? _1RM {  get; set; }
+        public decimal? AvgOverTime { get; set; }
+        public decimal? AvgLast3Weeks { get; set; }
     }
 }

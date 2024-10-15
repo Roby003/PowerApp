@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Enums
+namespace DTOs.Stats
 {
-    public enum NotificationTypes
+    public class NoSetsForExerciseDTO
     {
-        NewComment=2,
-        NewLike=3,
-        NewFollow=4,
+        public DateOnly FirstDayOfWeek;
+        public int NoSets;
+
     }
 }

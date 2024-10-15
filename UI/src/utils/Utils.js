@@ -1,5 +1,7 @@
 ///called like this Build..([1,0],["exerciseId",1],[["categoryId",1]])
 
+import { useEffect } from "react";
+
 export default function useUtils() {
   function BuildQueryJson(paging, sorting, filters) {
     return {
@@ -77,5 +79,14 @@ export default function useUtils() {
     var newData = await asyncGet();
     setter((oldData) => [...oldData, ...newData.slice(index)]);
   }
-  return { BuildQueryJson, parseDate, stringFormat, getPath, parseTimeSpan, fetchDataForScroll };
+
+  function useEffectAsync(asyncF, dependencies) {
+    useEffect(() => {
+      async function f() {
+        await asyncF();
+      }
+      f();
+    }, dependencies);
+  }
+  return { BuildQueryJson, parseDate, stringFormat, getPath, parseTimeSpan, fetchDataForScroll, useEffectAsync };
 }

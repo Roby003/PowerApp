@@ -93,7 +93,6 @@ export default function LogWorkoutCard() {
 
   const handleLogSubmit = async () => {
     try {
-      debugger;
       await logWorkout(note, imageList, applyErrorsFromApiForLog).then(() =>
         navigate(`${Paths.profileBuilder}${userSession.user().id}`)
       );

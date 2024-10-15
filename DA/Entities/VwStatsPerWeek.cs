@@ -13,9 +13,9 @@ public partial class VwStatsPerWeek
 
     public int? TotalVolume { get; set; }
 
-    public int? AvgRpe { get; set; }
+    public decimal? AvgRpe { get; set; }
 
     public decimal? ExertionIndex { get; set; }
 
-    public DateTime? FirstDayOfWeek { get; set; }
+    public DateOnly? FirstDayOfWeek { get; set; }
 }

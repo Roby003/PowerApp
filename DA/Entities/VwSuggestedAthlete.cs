@@ -11,5 +11,5 @@ public partial class VwSuggestedAthlete
 
     public string Username { get; set; } = null!;
 
-    public int? NoFollowers { get; set; }
+    public int NoFollowers { get; set; }
 }

@@ -1,4 +1,5 @@
 export default {
+  
   Authenticate: "/auth",
   GetUserById: (id) => `/user/${id}`,
   GetUsers: "/users",
@@ -40,6 +41,8 @@ export default {
   UpdateExercise: "/exercise/update",
   GetExerciseForUpdate: (exerciseId) => `/exercise/getForUpdate?exerciseId=${exerciseId}`,
   GetExerciseImage: (exerciseId) => `/exercise/getImage?exerciseId=${exerciseId}`,
+  GetExercisesInfo: (take, skip, name) => `/exercise/getInfo?take=${take}&skip=${skip}&exerciseName=${name}`,
+  GetExerciseInfoByTemplate: (templateId) => `/exercise/getInfoByTemplate?templateId=${templateId}`,
   GetCoaches: "/user/getCoaches",
 
   GetCategories: "/category/getAll",
@@ -56,6 +59,7 @@ export default {
   GetTemplateById: (templateId) => `/template/getById?templateId=${templateId}`,
   GetTemplateByTitle: (title) => `/template/getByTitle?title=${title}`,
   RemoveTemplate: (templateId) => `/template/remove?templateId=${templateId}`,
+  GetTemplatesInfo: (take, userId, name) => `/template/getInfo?take=${take}&userId=${userId}&name=${name}`,
 
   PostComment: "/comment",
   GetCommentsByWorkout: (workoutId, take) => `/comment/getByWorkout?workoutId=${workoutId}&take=${take}`,
@@ -77,6 +81,13 @@ export default {
   MarkRead: "/notification/markRead",
   CheckNewNotif: "/notification/checkNew",
 
-  GetStatsForExercise: (exerciseId, userId) => `/stats/exercise?exerciseId=${exerciseId}&userId=${userId}`,
+  GetSetsDataForExercise: (exerciseId, userId) => `/stats/exercise/sets?exerciseId=${exerciseId}&userId=${userId}`,
+  GetVolumeDataForExercise: (exerciseId, userId) => `/stats/exercise/volume?exerciseId=${exerciseId}&userId=${userId}`,
   GetStatsFor1RM: (exerciseId, userId) => `/stats/exercise/1RM?exerciseId=${exerciseId}&userId=${userId}`,
+  GetStatsFor1RMbyTemplate: (exerciseId, templateId) =>
+    `/stats/exercise/1RMbyTemplate?exerciseId=${exerciseId}&templateId=${templateId}`,
+  GetVolumeDataForTemplate: (templateId) => `/stats/template/volume?templateId=${templateId}`,
+
+  GetPersonalData: (userId) => `/stats/personal?userId=${userId}`,
+  GetPersonalAvgExertion: (userId) => `/stats/personal/exertion/avg?userId=${userId}`,
 };

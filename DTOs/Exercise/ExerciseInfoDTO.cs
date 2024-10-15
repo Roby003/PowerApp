@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Enums
+namespace DTOs.Exercise
 {
-    public enum NotificationTypes
+    internal class ExerciseInfoDTO
     {
-        NewComment=2,
-        NewLike=3,
-        NewFollow=4,
     }
 }

@@ -102,7 +102,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("workout/getFeatured")]
-        public async Task<ShowWorkoutDTO> GetFeaturedWorkout()
+        public async Task<ShowWorkoutDTO?> GetFeaturedWorkout()
         {
             return await workoutService.GetFeaturedWorkout();
         }

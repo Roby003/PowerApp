@@ -58,5 +58,12 @@ namespace API.Controllers
             return await templateService.RemoveTemplate(templateId);
         }
 
+        [HttpGet]
+        [Route("/template/getInfo")]
+        public async Task<List<TemplateInfoDTO>> GetTemplatesInfo([FromQuery] int take, [FromQuery] Guid userId, [FromQuery] string? name)
+        {
+            return await templateService.GetTemplatesInfo(take, userId, name);
+        }
+
     }
 }
