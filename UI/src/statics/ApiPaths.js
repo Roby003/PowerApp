@@ -1,5 +1,4 @@
 export default {
-  
   Authenticate: "/auth",
   GetUserById: (id) => `/user/${id}`,
   GetUsers: "/users",
@@ -60,6 +59,7 @@ export default {
   GetTemplateByTitle: (title) => `/template/getByTitle?title=${title}`,
   RemoveTemplate: (templateId) => `/template/remove?templateId=${templateId}`,
   GetTemplatesInfo: (take, userId, name) => `/template/getInfo?take=${take}&userId=${userId}&name=${name}`,
+  GetMostUsedTemplateInfo: (userId) => `/template/getMostUsedInfo?userId=${userId}`,
 
   PostComment: "/comment",
   GetCommentsByWorkout: (workoutId, take) => `/comment/getByWorkout?workoutId=${workoutId}&take=${take}`,

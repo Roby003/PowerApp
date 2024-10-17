@@ -8,10 +8,17 @@ import useStatsService from "../../../services/StatsService";
 import useUtils from "../../../utils/Utils";
 import SetsPerWeekChart from "./Charts/SetsPerWeekChart";
 import VolumePerWeekChart from "./Charts/VolumePerWeekChart";
-export const options = {
-  title: "1RM Progress",
+const options = {
+  chart: { title: "1RM Progress", legend: { position: "top" } },
   curveType: "function",
-  legend: { position: "bottom" },
+  series: {
+    0: { axis: "Volume" },
+  },
+  axes: {
+    y: {
+      Volume: { label: "Kg" },
+    },
+  },
 };
 
 const headerList = ["Date", "Weight (kg)"];
@@ -35,7 +42,7 @@ function ExerciseStatsItem({ exerciseInfo, userId }) {
     <motion.div
       layout
       className="col co-4 exerciseStatsItem"
-      style={{ minHeight: 280, minWidth: isOpen ? 1200 : 450, maxWidth: isOpen ? 3000 : 500 }}
+      style={{ minHeight: 280, minWidth: isOpen ? 1200 : 745, maxWidth: isOpen ? 3000 : 700 }}
       transition={{ duration: 0.3 }}
     >
       <Card
@@ -46,7 +53,7 @@ function ExerciseStatsItem({ exerciseInfo, userId }) {
           transition: "all 0.2s ease-in-out",
         }}
       >
-        <CardContent>
+        <CardContent sx={{ paddingBottom: 0 }} style={{ paddingBottom: 0 }}>
           <motion.div layout="position" className="row">
             <div className="col">{exerciseInfo.name}</div>
             <CardActionArea>
@@ -69,8 +76,12 @@ function ExerciseStatsItem({ exerciseInfo, userId }) {
           </motion.div>
           {data.length > 1 ? (
             <motion.div layout="position" className="row">
-              <motion.div className="col col-3" layout="position">
-                <Chart chartType="LineChart" width="100%" height="100%" data={data} options={options} legendToggle />
+              <motion.div
+                className="col col-3"
+                layout="position"
+                // style={{ padding: 10, paddingLeft: 15, paddingBottom: 0 }}
+              >
+                <Chart chartType="Line" width="100%" height="100%" data={data} options={options} legendToggle />
               </motion.div>
               {isOpen && (
                 <>

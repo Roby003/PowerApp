@@ -1439,3 +1439,15 @@ input::-webkit-inner-spin-button {
   justify-content: center;
   align-items: center;
 }
+
+.chartWrapper {
+  padding: 20px;
+  margin-bottom: 10px;
+  max-width: 700px;
+  min-width: 600px;
+}
+.chartWrapper2 {
+  padding: 20px;
+  padding-top: 0;
+  margin-bottom: 10px;
+}

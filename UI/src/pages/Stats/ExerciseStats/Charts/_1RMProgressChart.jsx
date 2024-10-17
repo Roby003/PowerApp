@@ -7,7 +7,9 @@ const headerList = ["Date", "Weight (kg)"];
 
 function _1RMProgressChart({ exerciseInfo, templateId = null }) {
   const options = {
-    title: "1RM Progress " + exerciseInfo.name,
+    chart: {
+      title: "1RM Progress " + exerciseInfo.name,
+    },
     curveType: "function",
     legend: { position: "bottom" },
   };
@@ -26,8 +28,8 @@ function _1RMProgressChart({ exerciseInfo, templateId = null }) {
     <motion.div className="col" layout="position">
       <div className="row">
         {data.length > 1 && (
-          <div className="">
-            <Chart chartType="LineChart" width="100%" height="100%" data={data} options={options} legendToggle />
+          <div className="chartWrapper">
+            <Chart chartType="Line" width="100%" height="100%" data={data} options={options} legendToggle />
           </div>
         )}
       </div>

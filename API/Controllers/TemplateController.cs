@@ -65,5 +65,11 @@ namespace API.Controllers
             return await templateService.GetTemplatesInfo(take, userId, name);
         }
 
+        [HttpGet]
+        [Route("/template/getMostUsedInfo")]
+        public async Task<TemplateInfoDTO> GetMostUsedTemplateInfo([FromQuery] Guid userId)
+        {
+            return await templateService.GetMostUsedTemplateInfo(userId);
+        }
     }
 }

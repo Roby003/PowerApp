@@ -3,7 +3,7 @@ import React from "react";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
 import Paths from "../../statics/Paths";
 import useUtils from "../../utils/Utils";
-const { stringFormat } = useUtils();
+const { stringFormat, getPath } = useUtils();
 
 const defaultPages = [
   { name: "Exercises", route: "" },
@@ -36,6 +36,12 @@ function StatsHomePage() {
     setValue(newValue);
   };
   const navigate = useNavigate();
+  React.useEffect(() => {
+    const path = getPath();
+    if (path.includes("/exercises")) setValue(0);
+    if (path.includes("/templates")) setValue(1);
+    if (path.includes("/personal")) setValue(2);
+  }, [window.location.href]);
   return (
     <div className="row">
       <Box

@@ -35,6 +35,10 @@ const useTemplateService = () => {
   const getTemplatesInfo = async (take, userId, name) => {
     return await api.get(ApiPaths.GetTemplatesInfo(take, userId, name));
   };
+
+  const getMostUsedTemplateInfo = async (userId) => {
+    return await api.get(ApiPaths.GetMostUsedTemplateInfo(userId));
+  };
   return {
     addTemplate,
     getTemplates,
@@ -42,6 +46,7 @@ const useTemplateService = () => {
     getTemplateByTitle,
     removeTemplate,
     getTemplatesInfo,
+    getMostUsedTemplateInfo,
   };
 };
 

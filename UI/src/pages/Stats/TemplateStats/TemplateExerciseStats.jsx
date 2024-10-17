@@ -12,7 +12,6 @@ function TemplateExerciseStats({ templateId }) {
   }, []);
   return (
     <>
-      <div style={{ fontWeight: "bold" }}>Exercise Progress</div>
       {ids.map((id) => (
         <>
           <_1RMProgressChart key={id.exerciseId} exerciseInfo={id} templateId={templateId} />

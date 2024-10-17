@@ -5,39 +5,41 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import Chart from "react-google-charts";
 import useStatsService from "../../../services/StatsService";
-import useUtils from "../../../utils/Utils";
 import TemplateExerciseStats from "./TemplateExerciseStats";
 export const optionsVolume = {
-  title: "Volume Progress Over Time",
+  chart: { title: "Volume Progress Over Time" },
   curveType: "function",
-  legend: { position: "bottom" },
+  series: {
+    0: { axis: "Volume" },
+    1: { axis: "Increase" },
+  },
+  axes: {
+    y: {
+      Volume: { label: "Volume (kg)" },
+      Increase: { label: "Increase (%)" },
+    },
+  },
+  legend: {
+    position: "bottom",
+    textStyle: {
+      padding: 10,
+    },
+  },
 };
 
-const headerListVolume = ["Date", "Weight (kg)"];
-
-export const optionsProgress = {
-  title: "Volume Progress from Last Workout (%)",
-  curveType: "function",
-  legend: { position: "bottom" },
-};
-
-const headerListProgress = ["Date", "Increase From Last Workout (%)"];
+const headerListVolume = ["Date", "Volume (kg)", "Increase (%)"];
 
 function TemplateStatsItem({ templateInfo, userId }) {
   const { getVolumeDataForTemplate } = useStatsService();
   const [dataVolume, setDataVolume] = useState([headerListVolume]);
-  const [dataProgress, setDataProgress] = useState([headerListProgress]);
 
-  const { parseDate } = useUtils();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     async function f() {
       let dataFromDb = await getVolumeDataForTemplate(templateInfo.templateId);
-      let dataListVolume = dataFromDb.map((obj) => Object.values(obj).slice(0, 2));
-      let dataListProgress = dataFromDb.map((obj) => [Object.values(obj)[0], Object.values(obj)[2]]);
+      let dataListVolume = dataFromDb.map((obj) => Object.values(obj));
       setDataVolume([headerListVolume, ...dataListVolume]);
-      setDataProgress([headerListProgress, ...dataListProgress]);
     }
     f();
   }, []);
@@ -50,8 +52,9 @@ function TemplateStatsItem({ templateInfo, userId }) {
       transition={{ duration: 0.3 }}
     >
       <Card
+        variant="elevation"
         sx={{
-          borderRadius: 4,
+          borderRadius: 6,
           minHeight: 280,
           maxHeight: isOpen ? "fit-content" : 280,
           transition: "all 0.2s ease-in-out",
@@ -79,33 +82,28 @@ function TemplateStatsItem({ templateInfo, userId }) {
             </CardActionArea>
           </motion.div>
           {dataVolume.length > 1 ? (
-            <motion.div layout="position" className="row">
-              <motion.div className="col col-3" layout="position">
-                <Chart
-                  chartType="LineChart"
-                  width="100%"
-                  height="100%"
-                  data={dataVolume}
-                  options={optionsVolume}
-                  legendToggle
-                />
+            <>
+              <motion.div layout="position" className="row">
+                <motion.div className="col col-3" layout="position">
+                  <Chart
+                    chartType="Line"
+                    width="100%"
+                    height="100%"
+                    data={dataVolume}
+                    options={optionsVolume}
+                    legendToggle
+                  />
+                </motion.div>
               </motion.div>
-              <motion.div className="col col-3" layout="position">
-                <Chart
-                  chartType="LineChart"
-                  width="100%"
-                  height="100%"
-                  data={dataProgress}
-                  options={optionsProgress}
-                  legendToggle
-                />
+              {isOpen && <div style={{ fontWeight: "bold", marginTop: 15 }}>Exercise Progress</div>}
+              <motion.div style={{ display: "flex", flexWrap: "wrap" }}>
+                {isOpen && (
+                  <>
+                    <TemplateExerciseStats templateId={templateInfo.templateId} />
+                  </>
+                )}
               </motion.div>
-              {isOpen && (
-                <>
-                  <TemplateExerciseStats templateId={templateInfo.templateId} />
-                </>
-              )}
-            </motion.div>
+            </>
           ) : (
             <motion.div layout="position" className="noDataBanner">
               You have no data for this template

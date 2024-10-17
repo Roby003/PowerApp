@@ -98,7 +98,6 @@ function PersonalStatsPage() {
         <div>
           Average exertion index in the last three weeks:
           <span style={{ fontWeight: "bold", color: isFatigued ? "rgb(194 50 50)" : "rgba(0, 0, 0, 0.87)" }}>
-            {" "}
             {data.avgExertion.avgLast3Weeks}
           </span>
           <span className="col" style={{ width: "fit-content", marginLeft: 2 }}>
@@ -111,9 +110,9 @@ function PersonalStatsPage() {
           <Card sx={cardStyles}>
             <CardContent>
               <div className="col">Sets per week progress</div>
-              <motion.div layout="position" className="row">
+              <motion.div layout="position" className="row" style={{ paddingLeft: 10, paddingTop: 10 }}>
                 <Chart
-                  chartType="LineChart"
+                  chartType="Line"
                   width="100%"
                   height="100%"
                   data={data.sets}
@@ -129,9 +128,9 @@ function PersonalStatsPage() {
             <CardContent>
               <div className="col">Volume per week progress</div>
 
-              <motion.div layout="position" className="row">
+              <motion.div layout="position" className="row" style={{ paddingLeft: 10, paddingTop: 10 }}>
                 <Chart
-                  chartType="LineChart"
+                  chartType="Line"
                   width="100%"
                   height="100%"
                   data={data.volume}
@@ -149,15 +148,8 @@ function PersonalStatsPage() {
             <CardContent>
               <div className="col">Rpe per week</div>
 
-              <motion.div layout="position" className="row">
-                <Chart
-                  chartType="LineChart"
-                  width="100%"
-                  height="100%"
-                  data={data.rpe}
-                  options={optionsRpe}
-                  legendToggle
-                />
+              <motion.div layout="position" className="row" style={{ paddingLeft: 10, paddingTop: 10 }}>
+                <Chart chartType="Line" width="100%" height="100%" data={data.rpe} options={optionsRpe} legendToggle />
               </motion.div>
             </CardContent>
           </Card>
@@ -167,9 +159,9 @@ function PersonalStatsPage() {
             <CardContent>
               <div className="col">Exertion Index per week</div>
 
-              <motion.div layout="position" className="row">
+              <motion.div layout="position" className="row" style={{ paddingLeft: 10, paddingTop: 10 }}>
                 <Chart
-                  chartType="LineChart"
+                  chartType="Line"
                   width="100%"
                   height="100%"
                   data={data.exertion}

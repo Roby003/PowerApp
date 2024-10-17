@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import useWorkoutService from "../../services/WorkoutService";
 import userSession from "../../utils/userSession";
 import ProfileInfo from "./ProfileInfo";
+import ProfilePageStats from "./ProfilePageStats";
 import WorkoutsListing from "./WorkoutsListing";
 
 export default function ProfilePage({ userId = null }) {
@@ -15,20 +16,34 @@ export default function ProfilePage({ userId = null }) {
       {userId == null ? (
         <>
           <ProfileInfo userId={id} />
-          <div style={{ maxWidth: 660 }}>
-            <WorkoutsListing getWorkouts={getPersonalWorkouts} userId={id} ownPageFlag={ownPageFlag} />
+          <div className="row">
+            <div className="col col-6">
+              <div style={{ maxWidth: 660 }}>
+                <WorkoutsListing getWorkouts={getPersonalWorkouts} userId={id} ownPageFlag={ownPageFlag} />
+              </div>
+            </div>
+            <div className="col col-6">
+              <ProfilePageStats userId={id} />
+            </div>
           </div>
         </>
       ) : (
         <>
           <ProfileInfo userId={userId} />
-          <div style={{ maxWidth: 660 }}>
-            <WorkoutsListing
-              getWorkouts={getPersonalWorkouts}
-              getWorkoutsByActivity={getPersonalWorkoutsByActivity}
-              userId={userId}
-              ownPageFlag={ownPageFlag}
-            />
+          <div className="row">
+            <div className="col col-6">
+              <div style={{ maxWidth: 660 }}>
+                <WorkoutsListing
+                  getWorkouts={getPersonalWorkouts}
+                  getWorkoutsByActivity={getPersonalWorkoutsByActivity}
+                  userId={userId}
+                  ownPageFlag={ownPageFlag}
+                />
+              </div>
+            </div>
+            <div className="col col-6">
+              <ProfilePageStats userId={userId} />
+            </div>
           </div>
         </>
       )}

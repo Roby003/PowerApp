@@ -88,7 +88,11 @@ function Navbar() {
           },
           { name: "Feed", route: Paths.feed, icon: <DensitySmallIcon /> },
           { name: "Profile", route: Paths.myProfile, icon: <PersonIcon /> },
-          { name: "Stats", route: stringFormat(Paths.stats_builder, userSession.user().id), icon: <BarChartIcon /> },
+          {
+            name: "Stats",
+            route: stringFormat(Paths.stats_exercises_builder, userSession.user().id),
+            icon: <BarChartIcon />,
+          },
         ]);
       } else {
         setPages([
@@ -96,7 +100,11 @@ function Navbar() {
           { name: "Feed", route: Paths.feed, icon: <DensitySmallIcon /> },
           { name: "Profile", route: Paths.myProfile, icon: <PersonIcon /> },
           { name: "Admin Panel", route: Paths.admin, icon: <AdminPanelSettingsIcon /> },
-          { name: "Stats", route: stringFormat(Paths.stats_builder, userSession.user().id), icon: <BarChartIcon /> },
+          {
+            name: "Stats",
+            route: stringFormat(Paths.stats_exercises_builder, userSession.user().id),
+            icon: <BarChartIcon />,
+          },
         ]);
       }
     }

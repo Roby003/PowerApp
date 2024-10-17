@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Chart from "react-google-charts";
 import useStatsService from "../../../../services/StatsService";
 export const options = {
-  title: "Volume Data Per Week",
+  chart: { title: "Volume Data Per Week" },
   curveType: "function",
   legend: { position: "bottom" },
 };
@@ -21,8 +21,8 @@ function VolumePerWeekChart({ userId, exerciseId }) {
     f();
   }, []);
   return (
-    <motion.div className="col col-3" layout>
-      <Chart chartType="LineChart" width="100%" height="100%" data={data} options={options} legendToggle />
+    <motion.div className="col col-3" layout style={{ paddingLeft: 15 }}>
+      <Chart chartType="Line" width="100%" height="100%" data={data} options={options} legendToggle />
     </motion.div>
   );
 }
