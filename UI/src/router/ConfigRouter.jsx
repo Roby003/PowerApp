@@ -19,6 +19,10 @@ import LandingPage from "../pages/Landing/LandingPage";
 import EditUser from "../pages/Profile/Edit/EditUser";
 import MyProfile from "../pages/Profile/MyProfile";
 import ProfilePage from "../pages/Profile/ProfilePage";
+import ExerciseStatsPage from "../pages/Stats/ExerciseStats/ExerciseStatsPage";
+import PersonalStatsPage from "../pages/Stats/PersonalStats/PersonalStatsPage";
+import StatsHomePage from "../pages/Stats/StatsHomePage";
+import TemplateStatsPage from "../pages/Stats/TemplateStats/TemplateStatsPage";
 import LogWorkout from "../pages/Workout/LogWorkout/LogWorkout";
 export default function configRouter() {
   return createBrowserRouter([
@@ -114,6 +118,29 @@ export default function configRouter() {
               <EditUser />
             </AuthenticatedRoute>
           ),
+        },
+        {
+          path: Paths.stats,
+          element: (
+            <AuthenticatedRoute>
+              <StatsHomePage />
+            </AuthenticatedRoute>
+          ),
+
+          children: [
+            {
+              path: Paths.stats_exercises,
+              element: <ExerciseStatsPage />,
+            },
+            {
+              path: Paths.stats_templates,
+              element: <TemplateStatsPage />,
+            },
+            {
+              path: Paths.stats_personal,
+              element: <PersonalStatsPage />,
+            },
+          ],
         },
         {
           path: "*",

@@ -1,4 +1,5 @@
 ﻿using DTOs.Set;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace DTOs.Workout
         public string? Note { get; set; } = null!;
         public int? TemplateId { get; set; }
         public List<AddSetDTO> setsDto { get; set; } = new List<AddSetDTO>();
+        public List<IFormFile> ImageList { get; set; } = new List<IFormFile>();
     }
-}
+ }

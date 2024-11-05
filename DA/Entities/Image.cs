@@ -11,11 +11,13 @@ public partial class Image
 
     public byte[] ContentFile { get; set; } = null!;
 
-    public bool? IsDefaultForExercise { get; set; }
-
     public bool? IsDefaultForUser { get; set; }
+
+    public bool? IsDefaultForExercise { get; set; }
 
     public virtual ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
+
+    public virtual ICollection<Workout> Workouts { get; set; } = new List<Workout>();
 }

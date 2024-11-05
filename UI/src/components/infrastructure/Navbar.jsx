@@ -1,5 +1,6 @@
 import AdbIcon from "@mui/icons-material/Adb";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import DensitySmallIcon from "@mui/icons-material/DensitySmall";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -19,6 +20,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAccount } from "../../contexts/AccountContext";
 import Paths from "../../statics/Paths";
 import userSession from "../../utils/userSession";
+import useUtils from "../../utils/Utils";
+import NotificationMenu from "../Notification/NotificationMenu";
 function Navbar() {
   const style = {
     position: "absolute",
@@ -37,11 +40,9 @@ function Navbar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { isAuth, setIsAuth } = useAccount();
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
-  const [settings, setSettings] = React.useState([]);
   const navigate = useNavigate();
-
+  const { getPath, stringFormat } = useUtils();
   const [value, setValue] = React.useState(1);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -87,6 +88,11 @@ function Navbar() {
           },
           { name: "Feed", route: Paths.feed, icon: <DensitySmallIcon /> },
           { name: "Profile", route: Paths.myProfile, icon: <PersonIcon /> },
+          {
+            name: "Stats",
+            route: stringFormat(Paths.stats_exercises_builder, userSession.user().id),
+            icon: <BarChartIcon />,
+          },
         ]);
       } else {
         setPages([
@@ -94,22 +100,24 @@ function Navbar() {
           { name: "Feed", route: Paths.feed, icon: <DensitySmallIcon /> },
           { name: "Profile", route: Paths.myProfile, icon: <PersonIcon /> },
           { name: "Admin Panel", route: Paths.admin, icon: <AdminPanelSettingsIcon /> },
+          {
+            name: "Stats",
+            route: stringFormat(Paths.stats_exercises_builder, userSession.user().id),
+            icon: <BarChartIcon />,
+          },
         ]);
       }
-      authState ? setSettings([{ name: "Profile", route: Paths.myProfile }]) : [];
     }
   }, [authState]);
 
   React.useEffect(() => {
+    const path = getPath();
     if (userSession.isAuthenticated())
-      if (
-        window.location.href.split("9000")[1] == `/profile/${userSession.user().id}` ||
-        window.location.href.split("9000")[1] == `/myProfile`
-      )
-        setValue(2);
-    if (window.location.href.split("9000")[1] == `/feed`) setValue(1);
-    if (window.location.href.split("9000")[1] == `/workout/create`) setValue(0);
-    if (window.location.href.split("9000")[1].split("/")[1] == `admin`) setValue(3);
+      if (path == `/profile/${userSession.user().id}` || path == `/myProfile`) setValue(2);
+    if (path == `/feed`) setValue(1);
+    if (path == `/workout/create`) setValue(0);
+    if (path == `/admin`) setValue(3);
+    if (path.includes("/statistics")) setValue(4);
   }, [window.location.href]);
 
   return (
@@ -208,6 +216,7 @@ function Navbar() {
                 >
                   {pages.map((page) => (
                     <Tab
+                      key={page.name}
                       icon={page.icon}
                       label={page.name}
                       onClick={() => navigate(page.route)}
@@ -220,8 +229,9 @@ function Navbar() {
           </Box>
 
           {authState ? (
-            <Box sx={{ flexGrow: 0 }}>
-              <Button textAlign="center" onClick={() => handleModalState(true)}>
+            <Box sx={{ flexGrow: 0, display: "flex", alignContent: "center" }}>
+              <NotificationMenu />
+              <Button textalign="center" onClick={() => handleModalState(true)}>
                 Logout
               </Button>
             </Box>

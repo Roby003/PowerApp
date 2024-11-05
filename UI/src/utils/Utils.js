@@ -1,5 +1,7 @@
 ///called like this Build..([1,0],["exerciseId",1],[["categoryId",1]])
 
+import { useEffect } from "react";
+
 export default function useUtils() {
   function BuildQueryJson(paging, sorting, filters) {
     return {
@@ -38,5 +40,53 @@ export default function useUtils() {
     });
   }
 
-  return { BuildQueryJson, parseDate, stringFormat };
+  function getPath() {
+    return window.location.href.split(":")[2].slice(4);
+  }
+
+  function parseTimeSpan(timeSpanStr) {
+    const timeSpanParts = timeSpanStr.split(":");
+
+    let days = 0;
+    let hours = 0;
+    let minutes = 0;
+    let seconds = 0;
+
+    if (timeSpanParts.length === 3) {
+      const [dayHour, min, sec] = timeSpanParts;
+      if (dayHour.includes(".")) {
+        const dayHourParts = dayHour.split(".");
+        days = parseInt(dayHourParts[0], 10);
+        hours = parseInt(dayHourParts[1], 10);
+      } else {
+        hours = parseInt(dayHour, 10);
+      }
+      minutes = parseInt(min, 10);
+      seconds = parseInt(sec, 10);
+    } else if (timeSpanParts.length === 2) {
+      [hours, minutes] = timeSpanParts.map((part) => parseInt(part, 10));
+    }
+
+    return {
+      days,
+      hours,
+      minutes,
+      seconds,
+    };
+  }
+
+  async function fetchDataForScroll(setter, index, asyncGet) {
+    var newData = await asyncGet();
+    setter((oldData) => [...oldData, ...newData.slice(index)]);
+  }
+
+  function useEffectAsync(asyncF, dependencies) {
+    useEffect(() => {
+      async function f() {
+        await asyncF();
+      }
+      f();
+    }, dependencies);
+  }
+  return { BuildQueryJson, parseDate, stringFormat, getPath, parseTimeSpan, fetchDataForScroll, useEffectAsync };
 }

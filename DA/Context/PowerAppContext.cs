@@ -34,6 +34,8 @@ public partial class PowerAppContext : DbContext
 
     public virtual DbSet<Notification> Notifications { get; set; }
 
+    public virtual DbSet<NotificationType> NotificationTypes { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<RoleApplication> RoleApplications { get; set; }
@@ -46,7 +48,21 @@ public partial class PowerAppContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<Vw1Rm> Vw1Rms { get; set; }
+
+    public virtual DbSet<VwAvgExertion> VwAvgExertions { get; set; }
+
     public virtual DbSet<VwExercise> VwExercises { get; set; }
+
+    public virtual DbSet<VwStatsForTemplateProgress> VwStatsForTemplateProgresses { get; set; }
+
+    public virtual DbSet<VwStatsPerExercisePerWeek> VwStatsPerExercisePerWeeks { get; set; }
+
+    public virtual DbSet<VwStatsPerWeek> VwStatsPerWeeks { get; set; }
+
+    public virtual DbSet<VwSuggestedAthlete> VwSuggestedAthletes { get; set; }
+
+    public virtual DbSet<VwTemplateExerciseExtension> VwTemplateExerciseExtensions { get; set; }
 
     public virtual DbSet<VwWorkoutsThisWeek> VwWorkoutsThisWeeks { get; set; }
 
@@ -56,7 +72,7 @@ public partial class PowerAppContext : DbContext
     {
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__CATEGORY__19093A0B296C171F");
+            entity.HasKey(e => e.CategoryId).HasName("PK__CATEGORY__19093A0BA9824F9E");
 
             entity.ToTable("CATEGORY");
 
@@ -69,7 +85,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Comment>(entity =>
         {
-            entity.HasKey(e => e.CommentId).HasName("PK__COMMENT__C3B4DFCA5D3F47DC");
+            entity.HasKey(e => e.CommentId).HasName("PK__COMMENT__C3B4DFCA6EB90F76");
 
             entity.ToTable("COMMENT");
 
@@ -94,7 +110,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Exercise>(entity =>
         {
-            entity.HasKey(e => e.ExerciseId).HasName("PK__EXERCISE__A074AD2FBC313079");
+            entity.HasKey(e => e.ExerciseId).HasName("PK__EXERCISE__A074AD2F4D595A9E");
 
             entity.ToTable("EXERCISE");
 
@@ -124,7 +140,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Food>(entity =>
         {
-            entity.HasKey(e => e.FoodId).HasName("PK__FOOD__856DB3EB19D8D0D5");
+            entity.HasKey(e => e.FoodId).HasName("PK__FOOD__856DB3EBA7A23322");
 
             entity.ToTable("FOOD");
 
@@ -133,17 +149,14 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Image>(entity =>
         {
-            entity.HasKey(e => e.ImageId).HasName("PK__IMAGE__7516F70C98667092");
+            entity.HasKey(e => e.ImageId).HasName("PK__IMAGE__7516F70C9B600C43");
 
             entity.ToTable("IMAGE");
-
-            entity.Property(e => e.IsDefaultForExercise).HasColumnName("isDefaultForExercise");
-            entity.Property(e => e.IsDefaultForUser).HasColumnName("isDefaultForUser");
         });
 
         modelBuilder.Entity<Like>(entity =>
         {
-            entity.HasKey(e => e.LikeId).HasName("PK__LIKE__A2922C141B584650");
+            entity.HasKey(e => e.LikeId).HasName("PK__LIKE__A2922C14E43E954F");
 
             entity.ToTable("LIKE");
 
@@ -160,7 +173,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Log>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__LOGS__3214EC072A626C5F");
+            entity.HasKey(e => e.Id).HasName("PK__LOGS__3214EC079A4078C9");
 
             entity.ToTable("LOGS");
 
@@ -174,7 +187,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Meal>(entity =>
         {
-            entity.HasKey(e => e.MealId).HasName("PK__MEAL__ACF6A63D618F6E13");
+            entity.HasKey(e => e.MealId).HasName("PK__MEAL__ACF6A63DEFCFC59F");
 
             entity.ToTable("MEAL");
 
@@ -194,7 +207,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<MealFood>(entity =>
         {
-            entity.HasKey(e => new { e.MealId, e.FoodId }).HasName("PK__MEAL_FOO__04A07D03A16A9E4B");
+            entity.HasKey(e => new { e.MealId, e.FoodId }).HasName("PK__MEAL_FOO__04A07D0327EDB720");
 
             entity.ToTable("MEAL_FOOD");
 
@@ -211,18 +224,24 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__NOTIFICA__20CF2E12FFF17A17");
+            entity.HasKey(e => e.NotificationId).HasName("PK__NOTIFICA__20CF2E1208F63E4A");
 
             entity.ToTable("NOTIFICATION");
+
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.IsRead).HasColumnName("isRead");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.NotificationCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_NOTIFICATION_USER_INITIATOR");
 
-            entity.HasOne(d => d.User).WithMany(p => p.NotificationUsers)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+            entity.HasOne(d => d.NotificationType).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.NotificationTypeId)
+                .HasConstraintName("FK_NOTIFICATION_NOTIFICATIONTYPE");
+
+            entity.HasOne(d => d.Target).WithMany(p => p.NotificationTargets)
+                .HasForeignKey(d => d.TargetId)
                 .HasConstraintName("FK_NOTIFICATION_USER");
 
             entity.HasOne(d => d.Workout).WithMany(p => p.Notifications)
@@ -230,9 +249,19 @@ public partial class PowerAppContext : DbContext
                 .HasConstraintName("FK_NOTIFIACTION_WORKOUT");
         });
 
+        modelBuilder.Entity<NotificationType>(entity =>
+        {
+            entity.HasKey(e => e.NotificationTypeId).HasName("PK__NOTIFICA__299002C1867A2FA9");
+
+            entity.ToTable("NOTIFICATION_TYPE");
+
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.Template).HasMaxLength(255);
+        });
+
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ROLES__3214EC07F1226FD9");
+            entity.HasKey(e => e.Id).HasName("PK__ROLES__3214EC07E02D46DD");
 
             entity.ToTable("ROLES");
 
@@ -242,7 +271,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<RoleApplication>(entity =>
         {
-            entity.HasKey(e => e.RoleApplicationId).HasName("PK__Role_App__115FFDA77B61DDBB");
+            entity.HasKey(e => e.RoleApplicationId).HasName("PK__Role_App__115FFDA786E22300");
 
             entity.ToTable("Role_Application");
 
@@ -267,7 +296,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Set>(entity =>
         {
-            entity.HasKey(e => e.SetId).HasName("PK__SET__7E08471D5DC678D7");
+            entity.HasKey(e => e.SetId).HasName("PK__SET__7E08471D637AD81B");
 
             entity.ToTable("SET");
 
@@ -286,7 +315,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<Template>(entity =>
         {
-            entity.HasKey(e => e.TemplateId).HasName("PK__TEMPLATE__F87ADD27E2B9694C");
+            entity.HasKey(e => e.TemplateId).HasName("PK__TEMPLATE__F87ADD27D96A93F8");
 
             entity.ToTable("TEMPLATE");
 
@@ -308,7 +337,7 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<TemplateExercise>(entity =>
         {
-            entity.HasKey(e => new { e.TemplateId, e.ExerciseId }).HasName("PK__TEMPLATE__127D97F54E6E70C6");
+            entity.HasKey(e => new { e.TemplateId, e.ExerciseId }).HasName("PK__TEMPLATE__127D97F52EE88512");
 
             entity.ToTable("TEMPLATE_EXERCISE");
 
@@ -325,14 +354,15 @@ public partial class PowerAppContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__USER__3214EC07FF6CE0F2");
+            entity.HasKey(e => e.Id).HasName("PK__USER__3214EC07E09C6672");
 
             entity.ToTable("USER");
 
-            entity.HasIndex(e => e.UserName, "UQ__USER__C9F28456ED4AB3C6").IsUnique();
+            entity.HasIndex(e => e.UserName, "UQ__USER__C9F284566162346F").IsUnique();
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newsequentialid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(4000);
             entity.Property(e => e.Email).HasMaxLength(250);
             entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.Password).HasMaxLength(250);
@@ -388,6 +418,31 @@ public partial class PowerAppContext : DbContext
                     });
         });
 
+        modelBuilder.Entity<Vw1Rm>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("Vw1RM");
+
+            entity.Property(e => e.CreatedDate).HasColumnName("createdDate");
+            entity.Property(e => e.ExerciseId).HasColumnName("exerciseId");
+            entity.Property(e => e.TemplateId).HasColumnName("templateId");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+            entity.Property(e => e.WorkoutId).HasColumnName("workoutId");
+            entity.Property(e => e._1rm).HasColumnType("numeric(27, 4)");
+        });
+
+        modelBuilder.Entity<VwAvgExertion>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwAvgExertion");
+
+            entity.Property(e => e.AvgLast3Weeks).HasColumnType("numeric(38, 6)");
+            entity.Property(e => e.AvgOverTime).HasColumnType("numeric(38, 6)");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+        });
+
         modelBuilder.Entity<VwExercise>(entity =>
         {
             entity
@@ -397,25 +452,79 @@ public partial class PowerAppContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(255);
         });
 
+        modelBuilder.Entity<VwStatsForTemplateProgress>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwStatsForTemplateProgress");
+
+            entity.Property(e => e.IncreaseFromLastWorkout).HasColumnType("decimal(21, 13)");
+            entity.Property(e => e.TemplateId).HasColumnName("templateId");
+            entity.Property(e => e.WorkoutId).HasColumnName("workoutId");
+        });
+
+        modelBuilder.Entity<VwStatsPerExercisePerWeek>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwStatsPerExercisePerWeek");
+
+            entity.Property(e => e.ExerciseId).HasColumnName("exerciseId");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+        });
+
+        modelBuilder.Entity<VwStatsPerWeek>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwStatsPerWeek");
+
+            entity.Property(e => e.AvgRpe).HasColumnType("decimal(38, 6)");
+            entity.Property(e => e.ExertionIndex).HasColumnType("numeric(13, 1)");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+        });
+
+        modelBuilder.Entity<VwSuggestedAthlete>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwSuggestedAthletes");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Username)
+                .HasMaxLength(200)
+                .HasColumnName("username");
+        });
+
+        modelBuilder.Entity<VwTemplateExerciseExtension>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwTemplateExerciseExtension");
+
+            entity.Property(e => e.ExerciseId).HasColumnName("exerciseId");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+            entity.Property(e => e.TemplateId).HasColumnName("templateId");
+        });
+
         modelBuilder.Entity<VwWorkoutsThisWeek>(entity =>
         {
             entity
                 .HasNoKey()
                 .ToView("VwWorkoutsThisWeek");
 
-            entity.Property(e => e.CommentCount).HasColumnName("commentCount");
-            entity.Property(e => e.LikeCount).HasColumnName("likeCount");
             entity.Property(e => e.WorkoutId).HasColumnName("workoutId");
         });
 
         modelBuilder.Entity<Workout>(entity =>
         {
-            entity.HasKey(e => e.WorkoutId).HasName("PK__WORKOUT__E1C42A012FA733A9");
+            entity.HasKey(e => e.WorkoutId).HasName("PK__WORKOUT__E1C42A01DCCD5FB3");
 
             entity.ToTable("WORKOUT");
 
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.IsFeatured).HasColumnName("isFeatured");
             entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.LastModifiedByNavigation).WithMany(p => p.WorkoutLastModifiedByNavigations)
@@ -431,6 +540,23 @@ public partial class PowerAppContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_WORKOUT_USER");
+
+            entity.HasMany(d => d.Images).WithMany(p => p.Workouts)
+                .UsingEntity<Dictionary<string, object>>(
+                    "WorkoutImage",
+                    r => r.HasOne<Image>().WithMany()
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_WORKOUTIMAGE_IMAGE"),
+                    l => l.HasOne<Workout>().WithMany()
+                        .HasForeignKey("WorkoutId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_WORKOUTIMAGE_WORKOUT"),
+                    j =>
+                    {
+                        j.HasKey("WorkoutId", "ImageId").HasName("PK__WORKOUT___3695457155799654");
+                        j.ToTable("WORKOUT_IMAGE");
+                    });
         });
 
         OnModelCreatingPartial(modelBuilder);

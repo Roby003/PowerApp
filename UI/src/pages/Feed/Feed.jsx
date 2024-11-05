@@ -15,8 +15,10 @@ function Feed() {
         <SuggestedUsers />
       </div>
       <div className="col col-6 feedCenterCard">
-        <FeaturedWorkout />
-        <FeedWorkouts />
+        <div style={{ maxWidth: 660 }}>
+          <FeaturedWorkout />
+          <FeedWorkouts />
+        </div>
       </div>
     </div>
   );

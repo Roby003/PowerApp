@@ -1,16 +1,20 @@
 ﻿using BL.UnitOfWork;
 using Common.AppSettings;
 using DA.Entities;
+using DTOs.Image;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Utils;
 
 namespace BL.Services
@@ -42,5 +46,12 @@ namespace BL.Services
 
 
         }
+
+        public async Task<List<byte[]>> GetImgListByIds(ImageListDTO dto)
+        {
+            return await UnitOfWork.Queryable<Image>().Where(i => dto.ImageIds.Contains(i.ImageId)).Select(i=>i.ContentFile).ToListAsync();
+        }
+
+      
     }
 }

@@ -12,12 +12,13 @@ import useCategoryService from "../../../services/CategoryService.js";
 import useExerciseService from "../../../services/ExerciseService.js";
 
 import { Alert, Divider, InputAdornment, OutlinedInput } from "@mui/material";
-import Pagination from "../../../components/utility/Pagination.jsx";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useLogContext } from "../../../contexts/LogWorkoutContext.jsx";
 import Resources from "../../../statics/Resources.js";
+import useUtils from "../../../utils/Utils.js";
 import ExerciseListItem from "./Components/ExerciseListItem.jsx";
-export default function ExerciseLibrary(props) {
-  const PAGINATION_CONSTANT = 6;
+export default function ExerciseLibrary() {
+  const PAGINATION_CONSTANT = 10;
   const [muscleSelect, setMuscleSelect] = React.useState("default");
   const { getExercisesByCategory, getExercisesAll } = useExerciseService();
   const { getCategories } = useCategoryService();
@@ -26,7 +27,7 @@ export default function ExerciseLibrary(props) {
   const [paginationState, setPaginationState] = React.useState(PAGINATION_CONSTANT);
   const { exerciseUsedAlert } = useLogContext();
   const [triggerSearch, setTriggerSearch] = React.useState(false);
-
+  const { fetchDataForScroll } = useUtils();
   const handleChange = async (event) => {
     setPaginationState(PAGINATION_CONSTANT);
     setMuscleSelect(event.target.value);
@@ -36,12 +37,6 @@ export default function ExerciseLibrary(props) {
           await getExercisesByCategory(
             [PAGINATION_CONSTANT, 0],
             ["exerciseId", 1],
-            // [
-            //   ["categoryId", event.target.value],
-            //   ["isActive", 1],
-            // ]
-
-            // ////////////////////////
 
             inputRef.current.value == ""
               ? [
@@ -66,22 +61,12 @@ export default function ExerciseLibrary(props) {
   }, []);
 
   React.useEffect(() => {
-    console.log("ssd");
     async function loadFromDb() {
       muscleSelect === "default"
-        ? setExerciseList(
-            await getExercisesAll(
-              PAGINATION_CONSTANT,
-              paginationState - PAGINATION_CONSTANT < 0 ? 0 : paginationState - PAGINATION_CONSTANT,
-              inputRef.current.value
-            )
-          )
+        ? setExerciseList(await getExercisesAll(paginationState, 0, inputRef.current.value))
         : setExerciseList(
             await getExercisesByCategory(
-              [
-                PAGINATION_CONSTANT,
-                paginationState - PAGINATION_CONSTANT < 0 ? 0 : paginationState - PAGINATION_CONSTANT,
-              ],
+              [paginationState, 0],
               ["exerciseId", 1],
               muscleSelect === ""
                 ? []
@@ -99,11 +84,7 @@ export default function ExerciseLibrary(props) {
           );
     }
     loadFromDb();
-  }, [paginationState, triggerSearch]);
-
-  function changePagination(change) {
-    setPaginationState(paginationState + change < PAGINATION_CONSTANT ? PAGINATION_CONSTANT : paginationState + change);
-  }
+  }, [triggerSearch]);
 
   const inputRef = React.useRef(null);
 
@@ -113,19 +94,10 @@ export default function ExerciseLibrary(props) {
 
     timeout = setTimeout(async () => {
       muscleSelect === "default"
-        ? setExerciseList(
-            await getExercisesAll(
-              PAGINATION_CONSTANT,
-              paginationState - PAGINATION_CONSTANT < 0 ? 0 : paginationState - PAGINATION_CONSTANT,
-              inputRef.current.value
-            )
-          )
+        ? setExerciseList(await getExercisesAll(paginationState, 0, inputRef.current.value))
         : setExerciseList(
             await getExercisesByCategory(
-              [
-                PAGINATION_CONSTANT,
-                paginationState - PAGINATION_CONSTANT < 0 ? 0 : paginationState - PAGINATION_CONSTANT,
-              ],
+              [paginationState, 0],
               ["exerciseId", 1],
               muscleSelect === ""
                 ? []
@@ -145,7 +117,37 @@ export default function ExerciseLibrary(props) {
 
     return handleChange;
   }
+  async function fetchData() {
+    muscleSelect === "default"
+      ? await fetchDataForScroll(
+          setExerciseList,
+          paginationState,
+          async () => await getExercisesAll(paginationState + PAGINATION_CONSTANT, 0, inputRef.current.value)
+        )
+      : await fetchDataForScroll(
+          setExerciseList,
+          paginationState,
+          async () =>
+            await getExercisesByCategory(
+              [paginationState + PAGINATION_CONSTANT, 0],
+              ["exerciseId", 1],
+              muscleSelect === ""
+                ? []
+                : inputRef.current.value == ""
+                ? [
+                    ["categoryId", muscleSelect],
+                    ["isActive", 1],
+                  ]
+                : [
+                    ["categoryId", muscleSelect],
+                    ["isActive", 1],
+                    ["name", inputRef.current.value],
+                  ]
+            )
+        );
 
+    setPaginationState(paginationState + PAGINATION_CONSTANT);
+  }
   return (
     <Box className="leftSide col-3">
       <Card variant="elevation">
@@ -190,16 +192,18 @@ export default function ExerciseLibrary(props) {
         </CardContent>
         <Divider variant="middle" />
         <CardContent className="exerciseList">
-          {exerciseList.map((ex) => {
-            return <ExerciseListItem key={ex.exerciseId} ex={ex} />;
-          })}
+          <InfiniteScroll
+            dataLength={exerciseList.length}
+            next={fetchData}
+            loader={<h4>Loading...</h4>}
+            hasMore={true}
+            height="500px"
+          >
+            {exerciseList.map((ex) => {
+              return <ExerciseListItem key={ex.exerciseId} ex={ex} />;
+            })}
+          </InfiniteScroll>
         </CardContent>
-        <Pagination
-          paginationState={paginationState}
-          PAGINATION_CONSTANT={PAGINATION_CONSTANT}
-          changePagination={changePagination}
-          objectList={exerciseList}
-        />
       </Card>
       {exerciseUsedAlert && <Alert severity="warning">{Resources.UsedExerciseAlert}</Alert>}
     </Box>

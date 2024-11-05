@@ -45,8 +45,31 @@ namespace BL.Services
             workout.Note = logWorkoutDTO.Note;
             var sets = Mapper.Map<AddSetDTO, DA.Entities.Set>(setsDtos);
 
+
             workout.Sets = sets;
             workout.TemplateId = logWorkoutDTO.TemplateId;
+
+
+            if (logWorkoutDTO.ImageList.Any())
+            {
+                var imageList = new List<Image>();
+                foreach(var item in logWorkoutDTO.ImageList)
+                {
+                    var image = new Image();
+                    using (var ms = new MemoryStream())
+                    {
+                        item.CopyTo(ms);
+                        var fileBytes = ms.ToArray();
+                        image.ContentFile = fileBytes;
+                    }
+                    imageList.Add(image);
+                }
+                workout.Images = imageList;
+            }
+            else
+            {
+                workout.Images=new List<Image>();
+            }
             await UnitOfWork.Repository<Workout>().AddAsync(workout);
             return await UnitOfWork.SaveChanges();
 
@@ -54,16 +77,17 @@ namespace BL.Services
 
         public async Task<List<ShowWorkoutDTO>> GetPersonalWorkoutsByActivity(int take, int skip, Guid userId)
         {
-          
+
 
             return await UnitOfWork.Queryable<Workout>()
                    .Where(w => w.UserId == userId)
-                   .Include(w => w.Sets).ThenInclude(s => s.Exercise).Include(w => w.User).ThenInclude(u => u.Image).Include(w => w.Likes).Include(w => w.Comments)
+                   .Include(w => w.Sets).ThenInclude(s => s.Exercise).Include(w => w.User).ThenInclude(u => u.Image).Include(w => w.Likes).Include(w => w.Comments).Include(w => w.Images)
                    .OrderByDescending(w => 0.3 * (w.Likes.Count()) + 0.7 * (w.Comments.Count())).Skip(skip).Take(take).Select(w => new ShowWorkoutDTO
                    {
                        WorkoutId = w.WorkoutId,
                        Note = w.Note,
                        CreatedDate = w.CreatedDate,
+                       ImageIds = w.Images.Select(i => i.ImageId).ToList(),
                        Exercises = w.Sets.GroupBy(s => s.Exercise).Select(s => new ShowExerciseDTO
                        {
                            ExerciseId = s.Key.ExerciseId,
@@ -89,16 +113,17 @@ namespace BL.Services
         }
         public async Task<List<ShowWorkoutDTO>> GetPersonalWorkouts(int take, int skip, Guid userId)
         {
-       
+
 
             return await UnitOfWork.Queryable<Workout>()
                     .Where(w => w.UserId == userId)
-                    .Include(w => w.Sets).Include(w => w.User)
+                    .Include(w => w.Sets).Include(w => w.User).Include(w=>w.Images)
                     .OrderByDescending(w => w.CreatedDate).Skip(skip).Take(take).Select(w => new ShowWorkoutDTO
                     {
                         WorkoutId = w.WorkoutId,
                         Note = w.Note,
                         CreatedDate = w.CreatedDate,
+                        ImageIds = w.Images.Select(i => i.ImageId).ToList(),
                         Exercises = w.Sets.GroupBy(s => s.Exercise).Select(s => new ShowExerciseDTO
                         {
                             ExerciseId = s.Key.ExerciseId,
@@ -123,8 +148,45 @@ namespace BL.Services
 
         }
 
+        public async Task<ShowWorkoutDTO?> GetWorkoutById(int workoutId)
+        {
+            return await UnitOfWork.Queryable<Workout>()
+                    .Where(w => w.WorkoutId == workoutId)
+                    .Include(w => w.Sets).Include(w => w.User).Include(w=>w.Images)
+                    .Select(w => new ShowWorkoutDTO
+                    {
+                        WorkoutId = w.WorkoutId,
+                        Note = w.Note,
+                        CreatedDate = w.CreatedDate,
+                        ImageIds = w.Images.Select(i => i.ImageId).ToList(),
+                        Exercises = w.Sets.GroupBy(s => s.Exercise).Select(s => new ShowExerciseDTO
+                        {
+                            ExerciseId = s.Key.ExerciseId,
+                            Name = s.Key.Name,
+                            Sets = s.Select(set => new SetListItemDTO
+                            {
+                                Reps = set.Reps,
+                                Weight = set.Weight,
+                                Rpe = set.Rpe
+                            }).ToList(),
+                        }).ToList(),
+                        User = new DTOs.Users.UserDetailsDTO
+                        {
+                            Id = w.UserId,
+                            UserName = w.User.UserName,
+                            Email = w.User.Email,
+                            RoleId = w.User.RoleId,
+                            Image = w.User.Image.ContentFile,
+                        }
+                    }).FirstOrDefaultAsync();
+        }
+
         public bool HasEmptyOrNegativeSets(List<AddSetDTO> setsDto)
         {
+          
+            if (!setsDto.Any())
+                return false;
+
             var isValid = true;
             foreach (var set in setsDto)
             {
@@ -140,14 +202,16 @@ namespace BL.Services
             var currentUserId = CurrentUser.Id();
             var currentUser = await UnitOfWork.Queryable<User>().Include(u => u.FollowedUsers).FirstAsync(u => u.Id == currentUserId);
 
-           
 
-            return await UnitOfWork.Queryable<Workout>().Where(w => currentUser.FollowedUsers.Contains(w.User)).Include(w => w.Sets).Include(w => w.User).Include(w => w.Likes).Include(w => w.Comments)
+
+            return await UnitOfWork.Queryable<Workout>().Where(w => currentUser.FollowedUsers.Contains(w.User))
+                .Include(w => w.Sets).Include(w => w.User).Include(w => w.Likes).Include(w => w.Comments).Include(w=>w.Images)
                    .OrderByDescending(w => 0.3 * (w.Likes.Count()) + 0.7 * (w.Comments.Count())).Skip(skip).Take(take).Select(w => new ShowWorkoutDTO
                    {
                        WorkoutId = w.WorkoutId,
                        Note = w.Note,
                        CreatedDate = w.CreatedDate,
+                       ImageIds = w.Images.Select(i => i.ImageId).ToList(),
                        Exercises = w.Sets.GroupBy(s => s.Exercise).Select(s => new ShowExerciseDTO
                        {
                            ExerciseId = s.Key.ExerciseId,
@@ -178,12 +242,14 @@ namespace BL.Services
 
 
             return await UnitOfWork.Queryable<Workout>()
-                    .Where(w => followedUserIds.Contains(w.UserId)).Include(w => w.Sets).ThenInclude(s => s.Exercise).Include(w => w.User).ThenInclude(u => u.Image)
+                    .Where(w => followedUserIds.Contains(w.UserId)).Include(w => w.Sets).ThenInclude(s => s.Exercise).Include(w => w.User).ThenInclude(u => u.Image).Include(w=>w.Images)
                     .OrderByDescending(w => w.CreatedDate).Skip(skip).Take(take).Select(w => new ShowWorkoutDTO
                     {
                         WorkoutId = w.WorkoutId,
                         Note = w.Note,
                         CreatedDate = w.CreatedDate,
+                        ImageIds = w.Images.Select(i => i.ImageId).ToList(),
+
                         Exercises = w.Sets.GroupBy(s => s.Exercise).Select(s => new ShowExerciseDTO
                         {
                             ExerciseId = s.Key.ExerciseId,
@@ -209,7 +275,7 @@ namespace BL.Services
 
         public async Task<int?> RemoveWorkout(int workoutId)
         {
-            var workout = await UnitOfWork.Queryable<Workout>().FirstOrDefaultAsync(w => w.WorkoutId == workoutId);
+            var workout = await UnitOfWork.Queryable<Workout>().Include(w=>w.Images).FirstOrDefaultAsync(w => w.WorkoutId == workoutId);
             if (workout == null || workout.UserId != CurrentUser.Id())
                 return null;
 
@@ -217,6 +283,8 @@ namespace BL.Services
             UnitOfWork.Repository<Comment>().RemoveRange(UnitOfWork.Queryable<Comment>().Where(l => l.WorkoutId == workoutId));
             UnitOfWork.Repository<Notification>().RemoveRange(UnitOfWork.Queryable<Notification>().Where(l => l.WorkoutId == workoutId));
             UnitOfWork.Repository<Set>().RemoveRange(UnitOfWork.Queryable<Set>().Where(l => l.WorkoutId == workoutId));
+            UnitOfWork.Repository<Workout>().Update(workout);
+            workout.Images.Clear();
 
             UnitOfWork.Repository<Workout>().Remove(workout);
             return await Save();
@@ -271,11 +339,13 @@ namespace BL.Services
             }
         }
 
-        public async Task<ShowWorkoutDTO> GetFeaturedWorkout()
+        public async Task<ShowWorkoutDTO?> GetFeaturedWorkout()
         {
 
-            var workout = await UnitOfWork.Queryable<Workout>().Include(w => w.Sets).Include(w => w.User).Where(w => w.IsFeatured == true).FirstAsync();
+            var workout = await UnitOfWork.Queryable<Workout>().Include(w => w.Sets).Include(w => w.User).Where(w => w.IsFeatured == true).FirstOrDefaultAsync();
 
+            if (workout == null)
+                return null;
             var exercises = await UnitOfWork.Queryable<Set>().Where(s => s.WorkoutId == workout.WorkoutId).GroupBy(s => s.Exercise).Select(s => new ShowExerciseDTO
             {
                 ExerciseId = s.Key.ExerciseId,
@@ -287,14 +357,15 @@ namespace BL.Services
                     Rpe = set.Rpe
                 }).ToList(),
             }).ToListAsync();
-
-            var user = await UnitOfWork.Queryable<User>().Include(u=>u.Image).Where(u => u.Id == workout.UserId).FirstAsync();
+            var imageIds = await UnitOfWork.Queryable<Workout>().Include(w => w.Images).Where(w => w.WorkoutId == workout.WorkoutId).SelectMany(w => w.Images).Select(i => i.ImageId).ToListAsync();
+            var user = await UnitOfWork.Queryable<User>().Include(u => u.Image).Where(u => u.Id == workout.UserId).FirstAsync();
             return new ShowWorkoutDTO
             {
                 WorkoutId = workout.WorkoutId,
                 Note = workout.Note,
                 CreatedDate = workout.CreatedDate,
                 Exercises = exercises,
+                ImageIds = imageIds,
                 User = new DTOs.Users.UserDetailsDTO
                 {
                     Id = user.Id,

@@ -15,15 +15,13 @@ function UserSearch({ getUsersByUsername, userId }) {
 
     timeout = setTimeout(async () => {
       setUsers(
-        inputRef.current.value === ""
+        inputRef.current.value.trim() === ""
           ? []
           : userId === null
-          ? await getUsersByUsername(inputRef.current.value)
-          : await getUsersByUsername(inputRef.current.value, userId)
+          ? await getUsersByUsername(inputRef.current.value.trim())
+          : await getUsersByUsername(inputRef.current.value.trim(), userId)
       );
     }, 500);
-
-    return handleChange;
   }
 
   return (

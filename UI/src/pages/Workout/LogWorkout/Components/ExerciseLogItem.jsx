@@ -81,7 +81,7 @@ export default function ExerciseLogItem({ exercise, image, setList, clearLogErro
               key={index}
               set={{ ...set }}
               index={index}
-              exId={exercise.exerciseId}
+              exId={exercise.exerciseId + " "}
               clearLogErrors={clearLogErrors}
             />
           ))}

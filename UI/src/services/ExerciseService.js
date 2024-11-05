@@ -37,6 +37,14 @@ const useExerciseService = () => {
     return await api.get(ApiPaths.GetExerciseImage(exerciseId));
   };
 
+  const getExercisesInfo = async (take, skip, name) => {
+    return await api.get(ApiPaths.GetExercisesInfo(take, skip, name));
+  };
+
+  const getExerciseInfoByTemplate = async (templateId) => {
+    return await api.get(ApiPaths.GetExerciseInfoByTemplate(templateId));
+  };
+
   return {
     getExercisesByCategory,
     getExercisesAll,
@@ -46,6 +54,8 @@ const useExerciseService = () => {
     updateExercise,
     getExerciseForUpdate,
     getExerciseImage,
+    getExercisesInfo,
+    getExerciseInfoByTemplate,
   };
 };
 

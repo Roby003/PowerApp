@@ -31,12 +31,22 @@ const useTemplateService = () => {
   const removeTemplate = async (templateId) => {
     return await api.delete(ApiPaths.RemoveTemplate(templateId));
   };
+
+  const getTemplatesInfo = async (take, userId, name) => {
+    return await api.get(ApiPaths.GetTemplatesInfo(take, userId, name));
+  };
+
+  const getMostUsedTemplateInfo = async (userId) => {
+    return await api.get(ApiPaths.GetMostUsedTemplateInfo(userId));
+  };
   return {
     addTemplate,
     getTemplates,
     getTemplateById,
     getTemplateByTitle,
     removeTemplate,
+    getTemplatesInfo,
+    getMostUsedTemplateInfo,
   };
 };
 

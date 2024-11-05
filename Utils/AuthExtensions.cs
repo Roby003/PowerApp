@@ -29,8 +29,10 @@ namespace Utils
 
             foreach (var item in user.GetType().GetProperties())
             {
+                if(!item.Name.Equals("Description"))
                 permClaims.Add(new Claim(item.Name, item.GetValue(user)!.ToString()!));
             }
+
 
             var token = new JwtSecurityToken(issuer,
                            issuer,

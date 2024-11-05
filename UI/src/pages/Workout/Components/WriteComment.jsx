@@ -6,7 +6,6 @@ import Resources from "../../../statics/Resources";
 import VALIDATIONS from "../../../validations";
 import { useValidation } from "../../../validations/useValidation";
 import Validator from "../../../validations/Validator";
-
 function WriteComment({ workoutId, reloadComments }) {
   const { addComment } = useCommentService();
   const {
@@ -47,7 +46,7 @@ function WriteComment({ workoutId, reloadComments }) {
           placeholder={Resources.WriteComment}
           value={comment.content}
           onChange={onChangeInput}
-          error={errors.content}
+          error={Boolean(errors.content)}
           size="small"
         />
         <Button variant="text" onClick={handleSubmit}>

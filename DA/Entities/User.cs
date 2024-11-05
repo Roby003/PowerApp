@@ -29,6 +29,8 @@ public partial class User
 
     public int ImageId { get; set; }
 
+    public string? Description { get; set; }
+
     public virtual ICollection<Comment> CommentLastModifiedByNavigations { get; set; } = new List<Comment>();
 
     public virtual ICollection<Comment> CommentUsers { get; set; } = new List<Comment>();
@@ -49,7 +51,7 @@ public partial class User
 
     public virtual ICollection<Notification> NotificationCreatedByNavigations { get; set; } = new List<Notification>();
 
-    public virtual ICollection<Notification> NotificationUsers { get; set; } = new List<Notification>();
+    public virtual ICollection<Notification> NotificationTargets { get; set; } = new List<Notification>();
 
     public virtual Role Role { get; set; } = null!;
 

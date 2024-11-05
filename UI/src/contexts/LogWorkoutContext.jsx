@@ -6,11 +6,9 @@ const LogWorkoutContext = createContext();
 const LogWorkoutProvider = ({ children }) => {
   const [exerciseListObj, setExerciseListObj] = useState({});
   const [templateList, setTemplateList] = useState([]);
-  const [imagesState, setImagesState] = useState({});
   const { addTemplate, getTemplates, getTemplateById } = useTemplateService();
   const [exerciseUsedAlert, setExerciseUsedAlert] = useState(false);
   const [templateIdState, setTemplateIdState] = useState(null);
-
   const { postWorkout, getPreviousByTemplateId } = useWorkoutService();
 
   function triggerExerciseAlert() {
@@ -19,12 +17,13 @@ const LogWorkoutProvider = ({ children }) => {
       setExerciseUsedAlert(false);
     }, 1000);
   }
+
   function addToSetList(ex, image) {
     exerciseListObj.hasOwnProperty(ex.exerciseId) === true
       ? triggerExerciseAlert()
       : setExerciseListObj({
           ...exerciseListObj,
-          [ex.exerciseId]: { exercise: ex, image: image, setList: [] },
+          [ex.exerciseId + " "]: { exercise: ex, image: image, setList: [] },
         });
     setTemplateIdState(null);
 
@@ -58,10 +57,11 @@ const LogWorkoutProvider = ({ children }) => {
     setTemplateIdState(templateId);
     const template = await getTemplateById(templateId);
     let newObj = {};
+
     template.exerciseList.forEach((ex) => {
       let newSetList = [];
       for (let i = 0; i < ex.sets; i++) newSetList.push({});
-      newObj[ex.exerciseId] = {
+      newObj[ex.exerciseId + " "] = {
         exercise: { exerciseId: ex.exerciseId, name: ex.name },
         image: ex.image,
         setList: newSetList,
@@ -73,10 +73,10 @@ const LogWorkoutProvider = ({ children }) => {
   function addSet(exId) {
     setExerciseListObj({
       ...exerciseListObj,
-      [exId]: {
-        ...exerciseListObj[exId],
+      [exId + " "]: {
+        ...exerciseListObj[exId + " "],
         setList: [
-          ...exerciseListObj[exId].setList,
+          ...exerciseListObj[exId + " "].setList,
           {
             reps: null,
             weight: null,
@@ -110,7 +110,6 @@ const LogWorkoutProvider = ({ children }) => {
     let newSetList = exerciseListObj[exId].setList;
     newSetList.splice(index, 1);
 
-    debugger;
     if (exerciseListObj[exId].setList.length === 0) {
       let auxObj = exerciseListObj;
       delete auxObj[exId];
@@ -155,22 +154,26 @@ const LogWorkoutProvider = ({ children }) => {
     setTemplateList(await getTemplates([10, 0], ["Title", 1]));
   }
 
-  async function logWorkout(note) {
+  async function logWorkout(note, imageList) {
     let dto = {
       Note: note,
       TemplateId: templateIdState,
       setsDto: [],
+      IMAGE_FORM_DATA_LIST: { name: "imageList", list: imageList },
     };
+
     Object.keys(exerciseListObj).forEach((exId) => {
       exerciseListObj[exId].setList.forEach((set) => {
         dto.setsDto.push({
-          ExerciseId: exId,
+          ExerciseId: exId.trim(),
           Reps: set.reps,
           Weight: set.weight,
           Rpe: set.rpe,
         });
       });
     });
+
+    dto.setsDto = JSON.stringify(dto.setsDto);
 
     await postWorkout({ ...dto });
     setTemplateIdState(null);
@@ -187,7 +190,7 @@ const LogWorkoutProvider = ({ children }) => {
     let newLogDto = {};
 
     workout.exercises.forEach((exerciseDTO) => {
-      newLogDto[exerciseDTO.exerciseId] = {
+      newLogDto[exerciseDTO.exerciseId + " "] = {
         exercise: exerciseDTO,
         image: exerciseDTO.image,
         setList: exerciseDTO.sets.map((set) => {

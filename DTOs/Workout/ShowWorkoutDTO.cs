@@ -17,5 +17,6 @@ namespace DTOs.Workout
         public List<ShowExerciseDTO> Exercises { get; set; } = new();
 
         public UserDetailsDTO User { get; set; } = null!;
+        public List<int> ImageIds { get; set; } = new();
     }
 }

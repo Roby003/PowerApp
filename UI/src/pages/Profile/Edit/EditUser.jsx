@@ -36,6 +36,8 @@ function EditUser() {
       .check(VALIDATIONS.alwaysTrue, "")
       .forProperty("image")
       .check(VALIDATIONS.alwaysTrue, "")
+      .forProperty("description")
+      .check(VALIDATIONS.alwaysTrue, "")
       .applyCheckOnlyOnSubmit()
   );
   useEffect(() => {
@@ -48,7 +50,6 @@ function EditUser() {
   const handleSubmit = async () => {
     if (!handleCheckFormErrors()) {
       try {
-        debugger;
         await updateUser(user).then(() => navigate(`${Paths.profileBuilder}${id}`));
       } catch (err) {
         applyErrorsFromApi(err.message.errors);
@@ -112,6 +113,19 @@ function EditUser() {
               type="file"
               accept="image/*"
             ></Input>
+          </CardContent>
+          <CardContent>
+            <div className="inputLabel">Description</div>
+            <TextField
+              name="description"
+              error={errors.description}
+              className="workoutNoteInput"
+              variant="outlined"
+              value={user.description}
+              onChange={onChangeInput}
+              multiline
+            />
+            {errors.description && <Alert severity="error">{errors.description}</Alert>}
           </CardContent>
           <CardContent className="flexRight flexStart">
             <Button variant="contained" onClick={handleSubmit}>

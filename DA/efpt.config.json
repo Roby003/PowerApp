@@ -63,6 +63,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[NOTIFICATION_TYPE]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Role_Application]",
          "ObjectType": 0
       },
@@ -91,7 +95,39 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[WORKOUT_IMAGE]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Vw1RM]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[VwAvgExertion]",
+         "ObjectType": 3
+      },
+      {
          "Name": "[dbo].[VwExercises]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[VwStatsForTemplateProgress]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[VwStatsPerExercisePerWeek]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[VwStatsPerWeek]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[VwSuggestedAthletes]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[VwTemplateExerciseExtension]",
          "ObjectType": 3
       },
       {

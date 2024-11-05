@@ -7,11 +7,12 @@ import useAuthService from "../../services/UserService";
 import Paths from "../../statics/Paths";
 import Roles from "../../statics/Roles";
 import userSession from "../../utils/userSession";
-import UserSearchModal from "./Components/UserSearchModal";
+import UserSearchModalforProfile from "./Components/UserSearchModalforProfile";
 
 export default function ProfileInfo({ userId }) {
   const [userInfo, setUserInfo] = useState({});
-  const { getUserInfo, triggerFollow, getFollowingByUsername, getFollowedByUsername } = useAuthService();
+  const { getUserInfo, triggerFollow, getFollowingByUsername, getFollowedByUsername, getFollowedAll, getFollowingAll } =
+    useAuthService();
   const [triggerReload, setTriggerReload] = useState(false);
   const [openFollowing, setOpenFollowing] = useState(false);
   const handleOpenFollowing = () => setOpenFollowing(true);
@@ -49,7 +50,7 @@ export default function ProfileInfo({ userId }) {
 
   return (
     <Box className="centerCard profileInfo">
-      <Card variant="elevation">
+      <Card variant="elevation" sx={{ borderRadius: 4 }}>
         {Object.keys(userInfo).length > 0 && (
           <>
             <CardContent>
@@ -67,6 +68,7 @@ export default function ProfileInfo({ userId }) {
                       {ownPageFlag && <Typography className="subTitle">{userInfo.email}</Typography>}
                     </div>
                   </div>
+                  <div className="row smallMarginLeft mediumMarginTop">{userInfo.description}</div>
                 </div>
                 <div className=" col col-9 flexRight flexStart">
                   <div className="profileInfoSmallContainer">
@@ -86,15 +88,17 @@ export default function ProfileInfo({ userId }) {
                     </CardActionArea>
                   </div>
 
-                  <UserSearchModal
+                  <UserSearchModalforProfile
                     open={openFollowing}
                     handleClose={handleCloseFollowing}
+                    userSearchFunctionAll={getFollowingAll}
                     userSearchFunction={getFollowingByUsername}
                     userId={userId}
                   />
-                  <UserSearchModal
+                  <UserSearchModalforProfile
                     open={openFollowed}
                     handleClose={handleCloseFollowed}
+                    userSearchFunctionAll={getFollowedAll}
                     userSearchFunction={getFollowedByUsername}
                     userId={userId}
                   />

@@ -57,7 +57,7 @@ const LoginPage = ({ setIsLogin }) => {
             name="email"
             value={loginDetails.email}
             onChange={onChangeInput}
-            error={errors.email}
+            error={Boolean(errors.email)}
             variant="outlined"
           />
         </CardContent>
@@ -68,7 +68,7 @@ const LoginPage = ({ setIsLogin }) => {
             name="password"
             value={loginDetails.password}
             onChange={onChangeInput}
-            error={errors.password}
+            error={Boolean(errors.password)}
             variant="outlined"
             type="password"
           />

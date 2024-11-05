@@ -131,6 +131,19 @@ namespace API.Controllers
         {
             return await UserService.GetCoachUsers();
         }
+
+        [HttpGet]
+        [Route("user/getFollowingAll")]
+        public async Task<List<UserListItemDTO>> GetFollowingAll([FromQuery] Guid userId)
+        {
+            return await UserService.GetFollowingAll(userId);
+        }
+        [HttpGet]
+        [Route("user/getFollowedAll")]
+        public async Task<List<UserListItemDTO>> GetFollowedAll([FromQuery] Guid userId)
+        {
+            return await UserService.GetFollowedAll(userId);
+        }
     }
 
 

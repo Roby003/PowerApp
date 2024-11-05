@@ -195,6 +195,7 @@ template {
   --color-main-alt: #ff4203;
   --font-color-secondary: rgb(137, 143, 153);
   --background-color: #f9fafb;
+  /* --background-color: #e8eff9; */
 }
 
 html {
@@ -699,7 +700,7 @@ button:hover {
 }
 
 .leftSide {
-  height: 100%;
+  height: 100vh;
   margin-right: 20px;
   margin-top: 10px;
 }
@@ -1188,6 +1189,9 @@ input::-webkit-inner-spin-button {
 
 .feedLeftSide {
   padding-right: 10%;
+  position: sticky;
+  height: fit-content;
+  top: 10px;
 }
 .searchUsersFeed {
   height: 250px;
@@ -1349,4 +1353,101 @@ input::-webkit-inner-spin-button {
 }
 .bold {
   font-weight: 500;
+}
+
+.workoutModalCard {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  border: 1px solid #cccccc;
+  background: #ffffff;
+  overflow: auto;
+  border-radius: 8px;
+  outline: none;
+  padding: 0px;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  max-height: 90vh;
+  width: 660px;
+
+  display: flex;
+  color-scheme: light;
+}
+
+.hoverBlue:hover {
+  color: var(--color-main);
+}
+
+.noHoverEffects:hover {
+  background-color: inherit !important;
+}
+
+.notificationMenu .MuiPaper-root {
+  border-radius: 20px;
+}
+
+.notificationMenuSubtitle {
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.workoutImage {
+  margin-top: 5px;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  display: block;
+  flex-grow: 0;
+  flex-shrink: 0;
+  transition: translate 300ms ease-in-out;
+  border-radius: 6px;
+}
+
+.img-slider-btn {
+  all: unset;
+  margin-top: 5px;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding: 1rem;
+  cursor: pointer;
+  transition: background-color 100ms ease-in-out;
+}
+
+.img-slider-dot {
+  cursor: pointer;
+}
+.img-slider-btn:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.img-slider-btn > * {
+  stroke: white;
+  fill: black;
+}
+
+.exerciseStatsItem {
+  padding: 15px;
+  margin-bottom: 40px;
+
+  /* margin-right: 10px; */
+}
+
+.noDataBanner {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chartWrapper {
+  padding: 20px;
+  margin-bottom: 10px;
+  max-width: 700px;
+  min-width: 600px;
+}
+.chartWrapper2 {
+  padding: 20px;
+  padding-top: 0;
+  margin-bottom: 10px;
 }

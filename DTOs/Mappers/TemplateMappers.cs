@@ -28,6 +28,7 @@ namespace DTOs.Mappers
 
             config.CreateMap<TemplateExerciseDTO, DA.Entities.TemplateExercise>();
             config.CreateMap<DA.Entities.Template, TemplateListItemDTO>();
+            config.CreateMap<VwTemplateExerciseExtension,ExerciseListItemDTO>();
         }
     }
 }

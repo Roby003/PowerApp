@@ -127,5 +127,22 @@ namespace BL.Services
             return await UnitOfWork.Queryable<Template>().Where(t => t.IsActive == true).Where(t => t.CreatedBy == currentUserId).AnyAsync(u => u.Title == title);
         }
 
+
+        public async Task<List<TemplateInfoDTO>> GetTemplatesInfo(int take, Guid userId, string? name)
+        {
+            return UnitOfWork.GetContext().Set<Template>().FromSqlRaw("EXEC GetTemplatesInfo @take={0}, @userId={1}, @name={2}", take, userId, name).AsEnumerable().Select(t => new TemplateInfoDTO
+            {
+                TemplateId = t.TemplateId,
+                Name = t.Title,
+            }).ToList();
+        }
+
+        public async Task<TemplateInfoDTO> GetMostUsedTemplateInfo(Guid userId)
+        {
+            var templateIds = await UnitOfWork.Queryable<Template>().Where(t => t.CreatedBy == userId).Select(t => t.TemplateId).ToListAsync();
+            var selectedTemplate = await UnitOfWork.Queryable<Workout>().Where(w => templateIds.Contains(w.TemplateId.GetValueOrDefault())).GroupBy(w => w.TemplateId)
+                                .OrderByDescending(g => g.Count()).Select(g => g.Key).FirstOrDefaultAsync();
+            return await UnitOfWork.Queryable<Template>().Where(t => t.TemplateId == selectedTemplate).Select(t => new TemplateInfoDTO { TemplateId = t.TemplateId, Name = t.Title }).FirstOrDefaultAsync();
+        }
     }
 }

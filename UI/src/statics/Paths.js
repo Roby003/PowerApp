@@ -30,4 +30,13 @@ export default {
   addCategory: "/admin/category/create",
 
   coachApplications: "/admin/applications/coach",
+
+  stats: "/statistics/:userId",
+  stats_builder: "/statistics/{0}",
+  stats_exercises_builder: "/statistics/{0}/exercises",
+  stats_exercises: "/statistics/:userId/exercises",
+  stats_templates: "/statistics/:userId/templates",
+  stats_templates_builder: "/statistics/{0}/templates",
+  stats_personal: "/statistics/:userId/personal",
+  stats_personal_builder: "/statistics/{0}/personal",
 };

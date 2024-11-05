@@ -5,6 +5,7 @@ using DTOs.Exercise;
 using DTOs.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OData.ModelBuilder;
 
 namespace API.Controllers
 {
@@ -88,6 +89,20 @@ namespace API.Controllers
         public async Task<byte[]?> GetExerciseImage([FromQuery] int exerciseId)
         {
             return await exerciseService.GetExerciseImage(exerciseId);
+        }
+
+        [HttpGet]
+        [Route("exercise/getInfo")]
+        public async Task<List<ExerciseListItemDTO>> GetExercisesInfo([FromQuery] int take, [FromQuery] int skip, [FromQuery] string? exerciseName)
+        {
+            return await exerciseService.GetExercisesInfo(take, skip, exerciseName);
+        }
+
+        [HttpGet]
+        [Route("exercise/getInfoByTemplate")]
+        public async Task<List<ExerciseListItemDTO>> GetExerciseInfoByTemplate([FromQuery] int templateId)
+        {
+            return await exerciseService.GetExerciseInfoByTemplate(templateId);
         }
 
     }

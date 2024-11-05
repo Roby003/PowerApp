@@ -20,6 +20,11 @@ const useApi = () => {
       if (isFormData) {
         let formData = new FormData();
         Object.keys(payload).forEach((key) => {
+          if (key === "IMAGE_FORM_DATA_LIST") {
+            payload[key].list.forEach((image) => {
+              formData.append(payload[key].name, image);
+            });
+          }
           formData.append(key, payload[key]);
         });
         options.data = formData;

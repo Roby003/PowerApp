@@ -9,5 +9,6 @@ namespace DTOs.Users
         public string Email { get; set; } = null!;
         public byte RoleId { get; set; }
         public byte[]? Image {  get; set; } = new byte[0];
+        public string? Description { get; set; }
     }
 }

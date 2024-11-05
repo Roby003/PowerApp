@@ -16,5 +16,6 @@ namespace DTOs.Users
         public int NoFollowingUsers { get; set; }
         public bool FollowingFlag { get; set; }
         public byte[] Image { get; set; } = new byte[0];
+        public string? Description { get; set; }
     }
 }

@@ -15,10 +15,12 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ConfirmRemoveModal from "../../../components/utility/ConfirmRemoveModal";
+import ImageSlider from "../../../components/utility/ImageSlider";
 import PageResources from "../../../resources/PageResources";
+import useImageService from "../../../services/ImageService";
 import useTemplateService from "../../../services/TemplateService";
 import useWorkoutService from "../../../services/WorkoutService";
 import Paths from "../../../statics/Paths";
@@ -66,7 +68,10 @@ import WriteComment from "./WriteComment";
 function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
   const [triggerCommentReload, setTriggerCommentReload] = useState(false);
   const reloadComments = () => setTriggerCommentReload(!triggerCommentReload);
+  const { getImage, getImageList } = useImageService();
+  const [imageList, setImageList] = useState([]);
   const { parseDate } = useUtils();
+
   const validator = new Validator()
     .forProperty("title")
     .check(VALIDATIONS.isRequired, "title is required")
@@ -126,8 +131,26 @@ function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
     await addTemplate({ Title: formData.title, exerciseDTOs: templateDto });
   };
 
+  // useEffect(() => {
+  //   async function load() {
+  //     let images = [];
+  //     workout.imageIds.forEach(async (id) => {
+  //       images.push(await getImage(id));
+  //     });
+  //     setImageList([...images]);
+  //   }
+  //   load();
+  // }, []);
+
+  // useEffect(() => {
+  //   async function load() {
+  //     setImageList(await getImageList(workout.imageIds));
+  //   }
+  //   load();
+  // }, []);
+
   return (
-    <Card variant="elevation" className="workoutListItem">
+    <Card variant="elevation" className="workoutListItem" sx={{ borderRadius: "18px" }}>
       <CardContent className="workoutListHeaders ">
         <div className="row">
           <div className="col col-6">
@@ -192,7 +215,7 @@ function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
               <CardContent>
                 <FormControl>
                   <TextField
-                    error={formErrors.title}
+                    error={Boolean(formErrors.title)}
                     name="title"
                     value={formData.title}
                     id="outlined-basic"
@@ -217,6 +240,11 @@ function WorkoutListItem({ workout, ownPageFlag, triggerReload }) {
             <div>{workout.note}</div>
           </div>
           <Typography className="subTitle">{parseDate(workout.createdDate)}</Typography>
+          {workout.imageIds.length > 0 && (
+            <div style={{ maxWidth: 660, width: "100%" }}>
+              <ImageSlider imageIds={workout.imageIds} />
+            </div>
+          )}
         </div>
       </CardContent>
       <Divider />
